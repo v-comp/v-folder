@@ -1,0 +1,25 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>v-tree-select</title>
+  <link rel="stylesheet" href="https://s5.ssl.qhres.com/static/81fbea24b5d1044d.css">
+  <link href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+</head>
+<body>
+  <div id="app"></div>
+  <script src="//lib.baomitu.com/vue/2.0.5/vue.js"></script>
+  <script src="./dist/bundle.js"></script>
+  <script>
+    Vue.use(vTreeSelect);
+    new Vue({
+      el: '#app',
+      components: {
+        'v-tree-select': vTreeSelect
+      },
+      template: '<v-tree-select/>'
+    });
+  </script>
+</body>
+</html>

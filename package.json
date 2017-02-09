@@ -1,0 +1,34 @@
+{
+  "name": "vue-tree-select",
+  "version": "1.0.0",
+  "description": "vue tree select component",
+  "main": "index.js",
+  "scripts": {
+    "build": "rollup  -c rollup.config.js -w",
+    "serv": "browser-sync start --server --files '*.html, dist/*'",
+    "start": "run-p build serv"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AngusFu/vue-tree-select.git"
+  },
+  "author": "wemlion <angusfu1126@qq.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/AngusFu/vue-tree-select/issues"
+  },
+  "homepage": "https://github.com/AngusFu/vue-tree-select#readme",
+  "devDependencies": {
+    "browser-sync": "^2.18.7",
+    "npm-run-all": "^4.0.1",
+    "rollup": "^0.41.4",
+    "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-node-resolve": "^2.0.0",
+    "rollup-plugin-uglify": "^1.0.1",
+    "rollup-plugin-vue": "^2.2.20",
+    "rollup-watch": "^3.2.2"
+  },
+  "dependencies": {
+    "vue": "^2.1.10"
+  }
+}
