@@ -6,6 +6,7 @@
   <title>v-tree-select</title>
   <link rel="stylesheet" href="https://s5.ssl.qhres.com/static/81fbea24b5d1044d.css">
   <link href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="./dist/bundle.css">
 </head>
 <body>
   <div id="app"></div>
@@ -13,12 +14,45 @@
   <script src="./dist/bundle.js"></script>
   <script>
     Vue.use(vTreeSelect);
+
+    let data = {
+      name: '根目录0',
+      dirs: [{
+        name: '子目录-0-1', 
+        dirs: [{
+          name: '子目录-0-1-1', 
+          dirs: [],
+          files: ['file-0-1-1-1.js']
+        }, {
+          name: '子目录-0-1-2', 
+          dirs: [],
+          files: ['file-0-1-2-1.js', 'file-0-1-2-1.js']
+        }]
+      }, {
+        name: '子目录-0-2', 
+        dirs: []
+      }],
+      files: [
+        '  xxxxxxxxxxxx',
+        '  yyyyyyyyyyyy',
+        '  zzzzzzzzzzzzz'
+      ]
+    };
+
     new Vue({
       el: '#app',
       components: {
         'v-tree-select': vTreeSelect
       },
-      template: '<v-tree-select/>'
+      data: {
+        data,
+        conf: {
+          node: 'name',
+          branch: 'dirs',
+          leaf: 'files'
+        }
+      },
+      template: '<v-tree-select :data="data" :conf="conf"></v-tree-select>'
     });
   </script>
 </body>

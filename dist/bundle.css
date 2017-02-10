@@ -1,0 +1,21 @@
+.branch {
+  -moz-user-select: none;
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+  color: #666;
+}
+.node {
+  cursor: pointer;
+}
+.node > .fa {
+  color: #0d83e6;
+}
+.leaf {
+  margin-left: 15px;
+  cursor: pointer;
+}
+
+.branch > .branch {
+  margin-left: 15px;
+}

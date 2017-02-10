@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "rollup  -c rollup.config.js -w",
-    "serv": "browser-sync start --server --files '*.html, dist/*'",
+    "serv": "serv",
     "start": "run-p build serv"
   },
   "repository": {
@@ -19,7 +19,6 @@
   },
   "homepage": "https://github.com/AngusFu/vue-tree-select#readme",
   "devDependencies": {
-    "browser-sync": "^2.18.7",
     "npm-run-all": "^4.0.1",
     "rollup": "^0.41.4",
     "rollup-plugin-buble": "^0.15.0",
@@ -29,6 +28,7 @@
     "rollup-watch": "^3.2.2"
   },
   "dependencies": {
+    "serv": "^0.2.4",
     "vue": "^2.1.10"
   }
 }
