@@ -1,3 +1,14 @@
-import Component from './index.vue';
-Component.install = Vue => Vue.component(Component.name, Component);
-export default Component;
+import VTreeComponent from './index.vue';
+import VBranchComponent from './v-branch.vue';
+
+VTreeComponent.install = Vue => {
+  // inject a eventbus
+  Vue.prototype.__EVENT_BUS = new Vue();
+  Vue.use(VBranchComponent);
+  Vue.component(VTreeComponent.name, VTreeComponent);
+};
+VBranchComponent.install = Vue => {
+  Vue.component(VBranchComponent.name, VBranchComponent);
+};
+
+export default VTreeComponent;

@@ -4,9 +4,11 @@
   "description": "vue tree select component",
   "main": "index.js",
   "scripts": {
-    "build": "rollup  -c rollup.config.js -w",
+    "test": "ava",
+    "build": "rollup -c rollup.config.js",
+    "develop": "rollup  -c rollup.config.js -w",
     "serv": "serv",
-    "start": "run-p build serv"
+    "start": "run-p develop serv"
   },
   "repository": {
     "type": "git",
@@ -19,9 +21,11 @@
   },
   "homepage": "https://github.com/AngusFu/vue-tree-select#readme",
   "devDependencies": {
+    "ava": "^0.18.1",
     "npm-run-all": "^4.0.1",
     "rollup": "^0.41.4",
     "rollup-plugin-buble": "^0.15.0",
+    "rollup-plugin-commonjs": "^7.0.0",
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-plugin-vue": "^2.2.20",

@@ -1,57 +1,91 @@
-<template>
-<ul class="branch">
-  <li class="node" @click="toggleNode(data)">
-    <i class="fa" :class="{
-      'fa-folder': !nodeExpanded,
-      'fa-folder-open': nodeExpanded
-    }"></i>
-    {{nodeName}}
-  </li> 
-
-  <v-tree-select
-    v-show="nodeExpanded"
-    v-for="branch in branches"
-    :data="branch"
-    :conf="conf"
-  ></v-tree-select> 
-
-
-  <li v-show="nodeExpanded" v-for="leaf in leaves" class="leaf">
-    {{leaf}}
-  </li>
-</ul>
+<template lang="html">
+  <ul class="branch">
+    <v-node :data="node"></v-node>
+    <v-branch v-show="node.open" v-for="branch in branches" :data="branch"></v-branch>
+    <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf"></v-leaf>
+  </ul>
 </template>
 
 <script>
+  import store from './store';
+  import VNode from './v-node.vue';
+  import VLeaf from './v-leaf.vue';
+  import VBranch from './v-branch.vue';
+
   export default {
-    name: 'vTreeSelect',
+    name: 'v-tree-select',
     props: {
       data: Object,
       conf: Object
     },
+    components: {
+      'v-node': VNode,
+      'v-leaf': VLeaf,
+      'v-branch': VBranch
+    },
     data() {
       return {
-        nodeExpanded: false
+        root: store.setStore(this.data, this.conf)
       };
     },
     computed: {
       branches() {
-        return this.data[this.conf.branch];
+        return this.root.branches;
       },
-      leaves() {
-        return this.data[this.conf.leaf];
+      leafs() {
+        return this.root.leafs;
       },
-      nodeName() {
-        return this.data[this.conf.node];
-      }
-    },
-    methods: {
-      toggleNode(data) {
-        this.nodeExpanded = !this.nodeExpanded;
+      node() {
+        return this.root.node;
       }
     },
     created() {
-      console.log(this.conf.node);
+      const checkBranchParent = (level, childChecked) => {
+        let branch = store.findParentBranch(level);
+        let nextStatus = false;
+
+        if (branch) {
+          if (childChecked) {
+            let allBranchesChecked = !branch.branches.some(b => !b.node.checked);
+            let allLeavesChecked   = !branch.leafs.some(l => !l.checked);
+            nextStatus = allBranchesChecked && allLeavesChecked;
+          }
+
+          branch.node.checked = nextStatus;
+          checkBranchParent(branch.level, nextStatus);
+        }
+      };
+
+      this.__EVENT_BUS.$on('node_toggle_expanded', node => {
+        node.open = !node.open;
+      });
+
+      this.__EVENT_BUS.$on('node_toggle_checked', node => {
+        let branch = store.findCurrentBranch(node.level);
+        let level  = branch.level;
+        let nextState = !branch.node.checked;
+        
+        branch.node.checked = nextState;
+        branch.branches.forEach(b => b.node.checked = nextState);
+        branch.leafs.forEach(l => l.checked = nextState);
+
+        checkBranchParent(level, nextState);
+        this.__EVENT_BUS.$emit('descendents_force_checked', branch.level, nextState);
+
+        this.$nextTick(() => {
+          this.$emit('change', store.getResult());
+        });
+      });
+
+      this.__EVENT_BUS.$on('leaf_toggle_checked', leaf => {
+        let nextState = !leaf.checked;
+        leaf.checked = nextState;
+        checkBranchParent(leaf.level, nextState);
+
+        this.$nextTick(() => {
+          this.$emit('change', store.getResult());
+        });
+      });
     }
   };
 </script>
@@ -63,19 +97,11 @@
     -webkit-user-select: none;
     user-select: none;
     color: #666;
+    font-size: 18px;
   }
-  .node {
-    cursor: pointer;
-  }
-  .node > .fa {
-    color: #0d83e6;
-  }
-  .leaf {
-    margin-left: 15px;
-    cursor: pointer;
-  }
-
   .branch > .branch {
-    margin-left: 15px;
+    margin-left: 27px;
   }
 </style>
+
+

@@ -1,4 +1,5 @@
 import buble from 'rollup-plugin-buble';
+import commonjs from 'rollup-plugin-commonjs';
 import resolve from 'rollup-plugin-node-resolve';
 import vue from 'rollup-plugin-vue';
 import uglify from 'rollup-plugin-uglify';
@@ -11,6 +12,7 @@ export default {
   useStrict: true,
   moduleName: 'vTreeSelect',
   plugins: [
+    commonjs(),
     vue({
       compileTemplate: false
     }),

@@ -8,7 +8,7 @@
   <link href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
   <link rel="stylesheet" href="./dist/bundle.css">
 </head>
-<body>
+<body style="margin: 40px;">
   <div id="app"></div>
   <script src="//lib.baomitu.com/vue/2.0.5/vue.js"></script>
   <script src="./dist/bundle.js"></script>
@@ -16,30 +16,41 @@
     Vue.use(vTreeSelect);
 
     let data = {
-      name: '根目录0',
+      name: '--root',
       dirs: [{
-        name: '子目录-0-1', 
+        name: '--root-0',
         dirs: [{
-          name: '子目录-0-1-1', 
+          name: '--root-0-0',
           dirs: [],
-          files: ['file-0-1-1-1.js']
+          files: ['root.0.0.0']
         }, {
-          name: '子目录-0-1-2', 
+          name: '--root-0-1',
           dirs: [],
-          files: ['file-0-1-2-1.js', 'file-0-1-2-1.js']
-        }]
+          files: ['root.0.1.0', 'root.0.1.1']
+        }],
+        files: ['root.0.0', 'root.0.1']
       }, {
-        name: '子目录-0-2', 
-        dirs: []
-      }],
+        name: '--root-1',
+        dirs: [{
+          name: '--root-1-0',
+          dirs: [{
+            name: '--root-1.0.0 TEST HERE',
+            dirs: [],
+            files: []
+          }],
+          files: []
+        }],
+        files: []
+      }
+      ],
       files: [
-        '  xxxxxxxxxxxx',
-        '  yyyyyyyyyyyy',
-        '  zzzzzzzzzzzzz'
+        'root-0',
+        'root-1',
+        'root-2'
       ]
     };
 
-    new Vue({
+    let vm = new Vue({
       el: '#app',
       components: {
         'v-tree-select': vTreeSelect
@@ -52,7 +63,12 @@
           leaf: 'files'
         }
       },
-      template: '<v-tree-select :data="data" :conf="conf"></v-tree-select>'
+      template: '<v-tree-select :data="data" :conf="conf" @change="onChange"></v-tree-select>',
+      methods: {
+        onChange(res) {
+          console.log(res);
+        }
+      }
     });
   </script>
 </body>

@@ -9,6 +9,6 @@
     "vue"
   ],
   "emmet.syntaxProfiles": {
-    "vue": "css"
+    // "vue": "css"
   }
 }

@@ -4,18 +4,31 @@
   -webkit-user-select: none;
   user-select: none;
   color: #666;
+  font-size: 18px;
 }
-.node {
-  cursor: pointer;
-}
-.node > .fa {
-  color: #0d83e6;
-}
-.leaf {
-  margin-left: 15px;
-  cursor: pointer;
-}
-
 .branch > .branch {
-  margin-left: 15px;
+  margin-left: 27px;
+}
+.v-node {
+  cursor: pointer;
+}
+.v-node .fa {
+  width: 20px;
+  color: #0d83e6;
+  text-align: center;
+}
+.v-node .fa:hover {
+  color: #0c71c5;
+}
+.v-leaf {
+  margin-left: 27px;
+  cursor: pointer;
+}
+.v-leaf .fa {
+  width: 20px;
+  color: #0d83e6;
+  text-align: center;
+}
+.v-leaf .fa:hover {
+  color: #0c71c5;
 }
