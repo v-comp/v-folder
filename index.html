@@ -3,18 +3,17 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>v-tree-select</title>
+  <title>v-folder</title>
   <link rel="stylesheet" href="https://s5.ssl.qhres.com/static/81fbea24b5d1044d.css">
   <link href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./dist/bundle.css">
 </head>
 <body style="margin: 40px;">
   <div id="app"></div>
   <div id="app2"></div>
   <script src="//lib.baomitu.com/vue/2.0.5/vue.js"></script>
-  <script src="./dist/bundle.js"></script>
+  <script src="./dist/bundle.common.js"></script>
   <script>
-    Vue.use(vTreeSelect);
+    Vue.use(vFolder);
 
     let data = {
       name: '--root',
@@ -62,7 +61,7 @@
     let vm = new Vue({
       el: '#app',
       components: {
-        'v-tree-select': vTreeSelect
+        'v-folder': vFolder
       },
       data: {
         data,
@@ -72,7 +71,7 @@
           leaf: 'files'
         }
       },
-      template: '<v-tree-select :data="data" :conf="conf" @change="onChange"></v-tree-select>',
+      template: '<v-folder :data="data" :conf="conf" @change="onChange"></v-folder>',
       methods: {
         onChange(res) {
           console.log(res);
@@ -83,7 +82,7 @@
     // new Vue({
     //   el: '#app2',
     //   components: {
-    //     'v-tree-select': vTreeSelect
+    //     'v-folder': vFolder
     //   },
     //   data: {
     //     data,
@@ -93,7 +92,7 @@
     //       leaf: 'files'
     //     }
     //   },
-    //   template: '<v-tree-select :data="data" :conf="conf" @change="onChange"></v-tree-select>',
+    //   template: '<v-folder :data="data" :conf="conf" @change="onChange"></v-folder>',
     //   methods: {
     //     onChange(res) {
     //       console.log(res);

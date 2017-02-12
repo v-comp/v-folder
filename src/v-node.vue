@@ -1,5 +1,5 @@
 <template>
-  <li class="v-node">
+  <li class="v-node" :key="data.level">
     <i
       class="fa"
       :class="[ data.canOpen && data.open ? 'fa-folder-open-o' : 'fa-folder-o' ]"
@@ -32,7 +32,7 @@
   };
 </script>
 
-<style lang="css">
+<style scoped>
   .v-node {
     cursor: pointer;
   }

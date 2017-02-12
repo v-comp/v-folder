@@ -1,3 +1,4 @@
+const objectAssign = require('object-assign');
 const { transform, defaultConf } = require('../src/transform');
 const arrPush = [].push;
 
@@ -63,7 +64,7 @@ module.exports = class Store {
   replaceBranch(data, levelId = '0', conf = defaultConf) {
     let lvs    = levelId.split('.').slice(1);
     let index  = 0;
-    let clone  = Object.assign({}, this.dataStore);
+    let clone  = objectAssign({}, this.dataStore);
     let parent = clone;
     let replacePos = lvs.pop();
 

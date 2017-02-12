@@ -1,5 +1,5 @@
 <template>
-  <li class="v-leaf" @click="toggleChecked">
+  <li class="v-leaf" @click="toggleChecked" :key="data.level">
     <i class="fa" :class="[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]"></i>
     {{data.name}}
   </li>
@@ -22,7 +22,7 @@
   };
 </script>
 
-<style lang="css">
+<style scoped>
   .v-leaf {
     margin-left: 27px;
     cursor: pointer;

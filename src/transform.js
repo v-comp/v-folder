@@ -1,3 +1,5 @@
+const objectAssign = require('object-assign');
+
 /**
  * standardlize a normal tree object
  * 
@@ -6,7 +8,7 @@
  * @param level  identifier inferring depth
  */
 const transform = (data = {}, conf = {}, level = '0', path = '') => {
-  let newConf = Object.assign({}, conf, defaultConf);
+  let newConf = objectAssign({}, conf, defaultConf);
   
   let { node, branch, leaf, checked, open } = newConf;
   let name = data[node] || '/';

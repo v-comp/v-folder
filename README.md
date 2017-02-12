@@ -1,9 +1,3 @@
-# vue-tree-select
+# v-folder
 
-vue-tree-select
-
-## TODO
-
-- 异步加载
-
-- 性能测试
+A folder select vue@2 component.

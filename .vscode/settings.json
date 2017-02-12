@@ -1,4 +1,5 @@
 {
+  "editor.wrappingColumn": 100,
   "vsicons.presets.angular": false,
   "files.associations": {
     "*.vue": "vue"
@@ -9,6 +10,6 @@
     "vue"
   ],
   "emmet.syntaxProfiles": {
-    // "vue": "css"
+    "vue": "css"
   }
 }

@@ -1,12 +1,8 @@
 <template>
-  <ul class="branch">
+  <ul class="branch" :key="node.level">
     <v-node :data="node"></v-node>
     <v-branch v-show="node.open" v-for="branch in branches" :data="branch"></v-branch>
-    <v-leaf
-      v-show="node.open"
-      v-for="leaf in leafs"
-      :data="leaf"
-    />
+    <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf"></v-leaf>
   </ul>
 </template>
 

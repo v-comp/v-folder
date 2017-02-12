@@ -13,7 +13,7 @@
   import VBranch from './v-branch.vue';
 
   export default {
-    name: 'v-tree-select',
+    name: 'v-folder',
     props: {
       data: Object,
       conf: Object
@@ -68,7 +68,7 @@
         let nextState = !leaf.checked;
         leaf.checked = nextState;
         this.store.checkAscendents(leaf.level, nextState);
-        
+
         this.$nextTick(() => {
           this.$emit('change', this.store.getPathResult());
         });
@@ -77,7 +77,7 @@
   };
 </script>
 
-<style>
+<style scoped>
   .branch {
     -moz-user-select: none;
     -ms-user-select: none;
