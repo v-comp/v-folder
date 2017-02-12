@@ -1,5 +1,5 @@
 {
-  "name": "vue-tree-select",
+  "name": "v-folder",
   "version": "1.0.0",
   "description": "vue tree select component",
   "main": "index.js",
@@ -12,14 +12,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/AngusFu/vue-tree-select.git"
+    "url": "git+https://github.com/AngusFu/v-folder.git"
   },
   "author": "wemlion <angusfu1126@qq.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/AngusFu/vue-tree-select/issues"
+    "url": "https://github.com/AngusFu/v-folder/issues"
   },
-  "homepage": "https://github.com/AngusFu/vue-tree-select#readme",
+  "homepage": "https://github.com/AngusFu/v-folder#readme",
   "devDependencies": {
     "ava": "^0.18.1",
     "npm-run-all": "^4.0.1",
@@ -29,10 +29,10 @@
     "rollup-plugin-node-resolve": "^2.0.0",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-plugin-vue": "^2.2.20",
-    "rollup-watch": "^3.2.2"
+    "rollup-watch": "^3.2.2",
+    "serv": "^0.2.4"
   },
   "dependencies": {
-    "serv": "^0.2.4",
     "vue": "^2.1.10"
   }
 }

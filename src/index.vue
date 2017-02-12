@@ -7,7 +7,7 @@
 </template>
 
 <script>
-  import store from './store';
+  import Store from './store';
   import VNode from './v-node.vue';
   import VLeaf from './v-leaf.vue';
   import VBranch from './v-branch.vue';
@@ -24,8 +24,11 @@
       'v-branch': VBranch
     },
     data() {
+      let store = new Store(this.data, this.conf);
+
       return {
-        root: store.setStore(this.data, this.conf)
+        store,
+        root: store.dataStore
       };
     },
     computed: {
@@ -40,28 +43,12 @@
       }
     },
     created() {
-      const checkBranchParent = (level, childChecked) => {
-        let branch = store.findParentBranch(level);
-        let nextStatus = false;
-
-        if (branch) {
-          if (childChecked) {
-            let allBranchesChecked = !branch.branches.some(b => !b.node.checked);
-            let allLeavesChecked   = !branch.leafs.some(l => !l.checked);
-            nextStatus = allBranchesChecked && allLeavesChecked;
-          }
-
-          branch.node.checked = nextStatus;
-          checkBranchParent(branch.level, nextStatus);
-        }
-      };
-
       this.__EVENT_BUS.$on('node_toggle_expanded', node => {
         node.open = !node.open;
       });
 
       this.__EVENT_BUS.$on('node_toggle_checked', node => {
-        let branch = store.findCurrentBranch(node.level);
+        let branch = this.store.findCurrentBranch(node.level);
         let level  = branch.level;
         let nextState = !branch.node.checked;
         
@@ -69,21 +56,21 @@
         branch.branches.forEach(b => b.node.checked = nextState);
         branch.leafs.forEach(l => l.checked = nextState);
 
-        checkBranchParent(level, nextState);
+        this.store.checkAscendents(level, nextState);
         this.__EVENT_BUS.$emit('descendents_force_checked', branch.level, nextState);
 
         this.$nextTick(() => {
-          this.$emit('change', store.getResult());
+          this.$emit('change', this.store.getPathResult());
         });
       });
 
       this.__EVENT_BUS.$on('leaf_toggle_checked', leaf => {
         let nextState = !leaf.checked;
         leaf.checked = nextState;
-        checkBranchParent(leaf.level, nextState);
-
+        this.store.checkAscendents(leaf.level, nextState);
+        
         this.$nextTick(() => {
-          this.$emit('change', store.getResult());
+          this.$emit('change', this.store.getPathResult());
         });
       });
     }

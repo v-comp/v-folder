@@ -1,18 +1,24 @@
 const { transform, defaultConf } = require('../src/transform');
 const arrPush = [].push;
 
-module.exports = {
-  dataStore: transform({}),
+module.exports = class Store {
+  constructor(data, conf) {
+    this.dataStore = this.setStore(data, conf);
+  }
 
   /**
-   * 设置初始数据
+   * set data store
    */
-  setStore(data, conf = defaultConf) {
+  setStore(data = {}, conf = defaultConf) {
     return (this.dataStore = transform(data, conf));
-  },
+  }
 
   /**
-   * get parent branch
+   * get parent branch by levelId.
+   * result for a leaf is the branch it is on,
+   * for a branch,  result is it's parent branch.
+   * 
+   * @param levelId
    */
   findParentBranch(levelId = '') {
     let length = levelId.length;
@@ -30,10 +36,12 @@ module.exports = {
     }
 
     return branch;
-  },
+  }
 
   /**
    * get current branch
+   * 
+   * @param levelId 
    */
   findCurrentBranch(levelId = '') {
     let lvs    = levelId.split('.').slice(1);
@@ -45,7 +53,7 @@ module.exports = {
     }
 
     return branch;
-  },
+  }
 
   /**
    * @param data     replace empty branch
@@ -66,9 +74,37 @@ module.exports = {
     parent.branches[replacePos] = transform(data, conf, levelId);
 
     return (this.dataStore = clone);
-  },
+  }
 
-  getBranchResult(branch) {
+  /**
+   * check ascendents of certain level rescursively
+   * to see if they should get checked
+   * 
+   * @param level    the descendent levelId
+   * @param checked  if the descendent is checked
+   */
+  checkAscendents(level, checked) {
+    let branch = this.findParentBranch(level);
+    let nextStatus = false;
+
+    if (branch) {
+      if (checked) {
+        let allBranchesChecked = !branch.branches.some(b => !b.node.checked);
+        let allLeavesChecked   = !branch.leafs.some(l => !l.checked);
+        nextStatus = allBranchesChecked && allLeavesChecked;
+      }
+
+      branch.node.checked = nextStatus;
+      this.checkAscendents(branch.level, nextStatus);
+    }
+  }
+
+  /**
+   * get result as path
+   */
+  getPathResult(branch) {
+    branch = branch || this.dataStore;
+
     let result = [];
     let { node, branches, leafs, path } = branch;
 
@@ -82,14 +118,10 @@ module.exports = {
       });
 
       branches.forEach(branch => {
-        arrPush.apply(result, this.getBranchResult(branch))
+        arrPush.apply(result, this.getPathResult(branch))
       });
     }
 
     return result;
-  },
-
-  getResult() {
-    return this.getBranchResult(this.dataStore)
   }
 };

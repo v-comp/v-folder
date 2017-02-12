@@ -5,12 +5,12 @@ import vue from 'rollup-plugin-vue';
 import uglify from 'rollup-plugin-uglify';
 
 export default {
-  entry: 'index.js',
+  entry: './src/index.js',
   dest: 'dist/bundle.js',
   format: 'umd',
   sourceMap: true,
   useStrict: true,
-  moduleName: 'vTreeSelect',
+  moduleName: 'vFolder',
   plugins: [
     commonjs(),
     vue({
@@ -24,6 +24,6 @@ export default {
       main: true,
       browser: true
     }),
-    uglify()
+    // uglify()
   ]
 };

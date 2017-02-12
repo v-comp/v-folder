@@ -10,6 +10,7 @@
 </head>
 <body style="margin: 40px;">
   <div id="app"></div>
+  <div id="app2"></div>
   <script src="//lib.baomitu.com/vue/2.0.5/vue.js"></script>
   <script src="./dist/bundle.js"></script>
   <script>
@@ -39,14 +40,22 @@
             files: []
           }],
           files: []
+        }, {
+          name: '--root-1-1',
+          dirs: [{
+            name: '--root-1-1-0',
+            dirs: [],
+            files: []
+          }],
+          files: []
         }],
         files: []
       }
       ],
       files: [
-        'root-0',
-        'root-1',
-        'root-2'
+        'root.0',
+        'root.1',
+        'root.2'
       ]
     };
 
@@ -70,6 +79,27 @@
         }
       }
     });
+
+    // new Vue({
+    //   el: '#app2',
+    //   components: {
+    //     'v-tree-select': vTreeSelect
+    //   },
+    //   data: {
+    //     data,
+    //     conf: {
+    //       node: 'name',
+    //       branch: 'dirs',
+    //       leaf: 'files'
+    //     }
+    //   },
+    //   template: '<v-tree-select :data="data" :conf="conf" @change="onChange"></v-tree-select>',
+    //   methods: {
+    //     onChange(res) {
+    //       console.log(res);
+    //     }
+    //   }
+    // });
   </script>
 </body>
 </html>

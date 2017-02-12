@@ -1,5 +1,5 @@
 import test from 'ava';
-import store from '../src/store';
+import Store from '../src/store';
 import { transform } from '../src/transform';
 
 let mock = {
@@ -38,7 +38,7 @@ let mock = {
 };
 
 let data = null;
-
+let store = new Store();
 test.beforeEach(t => {
   data = store.setStore(mock);
 });

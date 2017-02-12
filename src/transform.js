@@ -9,7 +9,7 @@ const transform = (data = {}, conf = {}, level = '0', path = '') => {
   let newConf = Object.assign({}, conf, defaultConf);
   
   let { node, branch, leaf, checked, open } = newConf;
-  let name = data[node] || '';
+  let name = data[node] || '/';
   let branches = data[branch] || [];
   let leafs   = data[leaf] || [];
   let canOpen  = branches.length > 0 || leafs.length > 0;
