@@ -1,12 +1,12 @@
 <template>
-  <li class="v-leaf" @click="notify('LEAF_CHECK')" :key="data.level">
+  <li class="v-leaf" @click="notify('change')" :key="data.level">
     <i class="fa" :class="[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]"></i>
     {{data.name}}
   </li>
 </template>
 
 <script>
-  import notifyMixin from './mixin.js';
+  import eHubMixin from './mixin';
 
   export default {
     props: {
@@ -19,6 +19,6 @@
         require: true
       }
     },
-    mixins: [notifyMixin]
+    mixins: [eHubMixin]
   };
 </script>

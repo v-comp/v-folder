@@ -1,18 +1,21 @@
-const objectAssign = require('object-assign');
-const { transform, defaultConf } = require('../src/transform');
-const arrPush = [].push;
+import objectAssign from 'object-assign';
+import deepClone from 'clone';
+import transform from '../src/transform';
 
-module.exports = class Store {
+const arrPush = [].push;
+const noop = _ => _;
+
+export default class Store {
   constructor(data, conf) {
-    this.dataStore = this.setStore(data, conf);
+    this.dataStore = transform(data, conf);
   }
 
   /**
    * set data store
    * @private
    */
-  setStore(data = {}, conf = defaultConf) {
-    return (this.dataStore = transform(data, conf));
+  replace(newTree) {
+    this.dataStore = newTree;
   }
 
   /**
@@ -115,15 +118,6 @@ module.exports = class Store {
     this.checkBranchDescendents(branch, nextState);
     this.checkBranchAscendents(this.findParentBranch(branch.level), nextState);
   }
-
-  /**
-   * check if a node should expand
-   * 
-   * @param node  node of a branch
-   */
-  expandNode(node) {
-    node.open = !node.open;
-  }
   
   /**
    * if a leaf is checked,
@@ -138,27 +132,64 @@ module.exports = class Store {
     leaf.checked = nextState;
     this.checkBranchAscendents(leafBranch, nextState);
   }
-  
 
    /**
-   * @param data     replace empty branch
-   * @param levelId  inditifying where to replace
-   * @param conf     contains keys to extract data from `data` 
-   */
-  replaceBranch(data, levelId = '0', conf = defaultConf) {
-    let lvs    = levelId.split('.').slice(1);
-    let index  = 0;
-    let clone  = objectAssign({}, this.dataStore);
-    let parent = clone;
-    let replacePos = lvs.pop();
+    * merge a branch to current tree
+    * @param branch
+    */
+  merge(
+    data = {},
+    node = {
+      level: '0',
+      path: ''
+    },
+    conf
+  ) {
+    let { level, path, checked } = node;
+    let branch = transform(data, conf, level, path);
+    let clone  = deepClone(this.dataStore);
 
-    while (parent && (index = lvs.shift())) {
-      parent = parent.branches[index];
+    let top = clone;
+    let lvs = level.split('.').slice(1);
+    let pos = lvs.pop();
+    let index = 0;
+
+    while (index = lvs.shift()) {
+      top = top.branches[index];
     }
 
-    parent.branches[replacePos] = transform(data, conf, levelId);
+    top.branches[pos] = branch;
+    branch.node.open = true;
+    branch.node.checked = checked;
 
-    return (this.dataStore = clone);
+    // TODO
+    this.replace(clone);
+    // Object.keys(branch).forEach(key => {
+    //   Vue.set(this.dataStore, key, branch[key]);
+    // });
+
+    this.checkBranchDescendents(branch, checked);
+  }
+
+  /**
+   * deal with actions
+   */
+  commit(action, elem, callback = noop) {
+    let isNode = elem.type === 'node';
+    
+    switch (action) {
+      case 'change':
+        this[isNode ? 'checkNode' : 'checkLeaf'](elem);
+        callback(this.getPathResult());
+        break;
+
+      case 'fold':
+        if (isNode) {
+          elem.open = !elem.open;
+          callback(elem.canOpen);
+        }
+        break;
+    }
   }
 
   /**

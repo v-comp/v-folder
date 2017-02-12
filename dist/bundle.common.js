@@ -1,2 +1,947 @@
-!function(e,n){"object"==typeof exports&&"undefined"!=typeof module?module.exports=n():"function"==typeof define&&define.amd?define(n):e.vFolder=n()}(this,function(){"use strict";function e(e){if(null===e||void 0===e)throw new TypeError("Object.assign cannot be called with null or undefined");return Object(e)}function n(){try{if(!Object.assign)return!1;var e=new String("abc");if(e[5]="de","5"===Object.getOwnPropertyNames(e)[0])return!1;for(var n={},t=0;t<10;t++)n["_"+String.fromCharCode(t)]=t;var r=Object.getOwnPropertyNames(n).map(function(e){return n[e]});if("0123456789"!==r.join(""))return!1;var o={};return"abcdefghijklmnopqrst".split("").forEach(function(e){o[e]=e}),"abcdefghijklmnopqrst"===Object.keys(Object.assign({},o)).join("")}catch(e){return!1}}function t(e,n){return n={exports:{}},e(n,n.exports),n.exports}var r=Object.getOwnPropertySymbols,o=Object.prototype.hasOwnProperty,a=Object.prototype.propertyIsEnumerable,i=n()?Object.assign:function(n,t){for(var i,c,s=arguments,f=e(n),d=1;d<arguments.length;d++){i=Object(s[d]);for(var u in i)o.call(i,u)&&(f[u]=i[u]);if(r){c=r(i);for(var h=0;h<c.length;h++)a.call(i,c[h])&&(f[c[h]]=i[c[h]])}}return f},c=i,s=function(e,n,t,r){void 0===e&&(e={}),void 0===n&&(n={}),void 0===t&&(t="0"),void 0===r&&(r="");var o=c({},n,f),a=o.node,i=o.branch,d=o.leaf,u=o.checked,h=o.open,l=e[a]||"/",p=e[i]||[],v=e[d]||[],b=p.length>0||v.length>0;return p=p.map(function(e,n){return s(e,o,t+"."+n,r+"/"+e.name)}),v=v.map(function(e,n){return{checked:u,name:e,level:t+"."+n,path:r+"/"+e}}),{name:l,level:t,path:r,node:{name:l,open:h,canOpen:b,checked:u,level:t},branches:p,leafs:v}},f={node:"name",branch:"dirs",leaf:"files",open:!1,checked:!1},d={transform:s,defaultConf:f},u=i,h=d.transform,l=d.defaultConf,p=[].push,v=function(){function e(e,n){this.dataStore=this.setStore(e,n)}return e.prototype.setStore=function(e,n){return void 0===e&&(e={}),void 0===n&&(n=l),this.dataStore=h(e,n)},e.prototype.findParentBranch=function(e){void 0===e&&(e="");var n=e.length,t=this.dataStore;if(n<=1)return null;for(var r=e.split(".").slice(1,-1),o=0;t&&(o=r.shift());)t=t.branches[o];return t},e.prototype.findCurrentBranch=function(e){void 0===e&&(e="");for(var n=e.split(".").slice(1),t=0,r=this.dataStore;r&&(t=n.shift());)r=r.branches[t];return r},e.prototype.checkBranchAscendents=function(e,n){var t=!1;if(e){if(n){var r=!e.branches.some(function(e){return!e.node.checked}),o=!e.leafs.some(function(e){return!e.checked});t=r&&o}e.node.checked=t,this.checkBranchAscendents(this.findParentBranch(e.level),t)}},e.prototype.checkBranchDescendents=function(e,n){var t=this;e.node.checked=n,e.leafs.forEach(function(e){return e.checked=n}),e.branches.forEach(function(e){e.node.checked=n,t.checkBranchDescendents(e,n)})},e.prototype.checkNode=function(e){var n=this.findCurrentBranch(e.level),t=!n.node.checked;this.checkBranchDescendents(n,t),this.checkBranchAscendents(this.findParentBranch(n.level),t)},e.prototype.expandNode=function(e){e.open=!e.open},e.prototype.checkLeaf=function(e){var n=this.findParentBranch(e.level),t=!e.checked;e.checked=t,this.checkBranchAscendents(n,t)},e.prototype.replaceBranch=function(e,n,t){void 0===n&&(n="0"),void 0===t&&(t=l);for(var r=n.split(".").slice(1),o=0,a=u({},this.dataStore),i=a,c=r.pop();i&&(o=r.shift());)i=i.branches[o];return i.branches[c]=h(e,t,n),this.dataStore=a},e.prototype.getPathResult=function(e){var n=this;e=e||this.dataStore;var t=[],r=e.node,o=e.branches,a=e.leafs;e.path;return r.checked?t.push(e.path):(a.forEach(function(e){var n=e.checked,r=e.path;n&&t.push(r)}),o.forEach(function(e){p.apply(t,n.getPathResult(e))})),t},e}(),b={methods:{notify:function(e){this.$vemit(e,this.data)}}},m={template:'<li class="v-node" :key="data.level"><i class="fa" :class="[ data.canOpen && data.open ? \'fa-folder-open-o\' : \'fa-folder-o\' ]" @click="notify(\'NODE_OPEN\')"></i> <span @click="notify(\'NODE_CHECK\')"><i class="fa" :class="[ data.checked ? \'fa-check-square-o\' : \'fa-square-o\' ]"></i> {{data.name}}</span></li>',props:{data:{type:Object,require:!0},uid:{type:[Number,String],require:!0}},mixins:[b]},y={template:'<li class="v-leaf" @click="notify(\'LEAF_CHECK\')" :key="data.level"><i class="fa" :class="[ data.checked ? \'fa-check-square-o\' : \'fa-square-o\' ]"></i> {{data.name}}</li>',props:{data:{type:Object,require:!0},uid:{type:[Number,String],require:!0}},mixins:[b]},k={template:'<li :key="node.level" class="v-branch"><ul class="v-branch-body"><v-node :data="node" :uid="uid"></v-node><v-branch v-show="node.open" v-for="branch in branches" :data="branch" :uid="uid"></v-branch><v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf" :uid="uid"></v-leaf></ul></li>',name:"v-branch",props:{data:{type:Object,require:!0},uid:{type:[Number,String],require:!0}},components:{"v-node":m,"v-leaf":y},computed:{branches:function(){return this.data.branches},leafs:function(){return this.data.leafs},node:function(){return this.data.node}}},g=2333,O={template:'<ul class="v-branch-body"><v-node :data="node" :uid="uid"></v-node><v-branch v-show="node.open" v-for="branch in branches" :data="branch" :uid="uid"></v-branch><v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf" :uid="uid"></v-leaf></ul>',name:"v-folder",props:{data:Object,conf:Object},components:{"v-node":m,"v-leaf":y,"v-branch":k},data:function(){var e=new v(this.data,this.conf);return{uid:g++,store:e,root:e.dataStore}},computed:{branches:function(){return this.root.branches},leafs:function(){return this.root.leafs},node:function(){return this.root.node}},created:function(){var e=this;this.$von("NODE_OPEN",function(n){e.store.expandNode(n)}),this.$von("NODE_CHECK",function(n){e.store.checkNode(n),e.$vemit("change",e.store.getPathResult())}),this.$von("LEAF_CHECK",function(n){e.store.checkLeaf(n),e.$emit("change",e.store.getPathResult())})},destroyed:function(){this.$voff()}},j="undefined"!=typeof window?window:"undefined"!=typeof global?global:"undefined"!=typeof self?self:{},w=t(function(e,n){!function(n,t){e.exports=t()}(j,function(){function e(e){var n=e.split("."),t=n.splice(0,2);return t.push(n.join(".")),t}function n(e){return isNaN(Number(e))?e:Number(e)}function t(e){if("string"!=typeof e)throw new TypeError("Invalid argument expected string");if(!r.test(e))throw new Error("Invalid argument not valid semver")}var r=/^v?(?:0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)?)?$/i,o=/-([0-9A-Za-z-.]+)/;return function(r,a){[r,a].forEach(t);for(var i=e(r),c=e(a),s=0;s<3;s++){var f=parseInt(i[s]||0,10),d=parseInt(c[s]||0,10);if(f>d)return 1;if(d>f)return-1}if([i[2],c[2]].every(o.test.bind(o))){var u=o.exec(i[2])[1].split(".").map(n),h=o.exec(c[2])[1].split(".").map(n);for(s=0;s<Math.max(u.length,h.length);s++){if(void 0===u[s]||"string"==typeof h[s]&&"number"==typeof u[s])return-1;if(void 0===h[s]||"string"==typeof u[s]&&"number"==typeof h[s])return 1;if(u[s]>h[s])return 1;if(h[s]>u[s])return-1}}else if([i[2],c[2]].some(o.test.bind(o)))return o.test(i[2])?-1:1;return 0}})}),E=function(){var e=function(e,n){return w(e,n)>=0};if(!e(Vue.version,"2.0.0"))throw"This module can only supports vue@2!"},N=function(){var e=new Vue,n=Vue.prototype;n.$von=function(n,t){var r=this.uid,o=function(e){r===e.uid&&t&&t(e.data)};e.$on("@"+r+":"+n,o)},n.$vonce=function(n,t){var r=this.uid,o=function(e){console.log(e),r===e.uid&&t&&t(e.data)};e.$once("@"+r+":"+n,o)},n.$vemit=function(n,t){var r=this.uid;e.$emit("@"+r+":"+n,{data:t,uid:r})},n.$voff=function(n,t){var r=this.uid;if(n)e.$off("@"+r+":"+n,t);else{r="@"+r+":";var o=(r.length,Object.keys(e._events)),a=o.filter(function(e){return 0===key.indexOf(r)});a.forEach(function(n){e.$off(n,t)})}}};return O.install=function(e){E(e),N(e),e.component(O.name,O)},O});
+(function (global, factory) {
+	typeof exports === 'object' && typeof module !== 'undefined' ? factory() :
+	typeof define === 'function' && define.amd ? define(factory) :
+	(factory());
+}(this, (function () { 'use strict';
+
+var eHubMixin = {
+  methods: {
+    notify: function notify(type) {
+      {
+        console.info('[event type]:', type);
+      }
+      this.___vemit(type, this.data);
+    },
+    listen: function listen(type, fn) {
+      this.___von(type, function (e) {
+        fn(e);
+      });
+    }
+  },
+  destroyed: function destroyed() {
+    this.___voff();
+  }
+};
+
+var VNode = { template: "<li class=\"v-node\" :key=\"data.level\"><i class=\"fa\" :class=\"[ data.canOpen && data.open ? 'fa-folder-open-o' : 'fa-folder-o' ]\" @click=\"notify('unfold')\"></i> <span @click=\"notify('change')\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</span></li>",
+  props: {
+    data: {
+      type: Object,
+      require: true
+    },
+    uid: {
+      type: [Number, String],
+      require: true
+    }
+  },
+  mixins: [eHubMixin]
+};
+
+var VLeaf = { template: "<li class=\"v-leaf\" @click=\"notify('change')\" :key=\"data.level\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</li>",
+  props: {
+    data: {
+      type: Object,
+      require: true
+    },
+    uid: {
+      type: [Number, String],
+      require: true
+    }
+  },
+  mixins: [eHubMixin]
+};
+
+var VBranch = { template: "<li :key=\"node.level\" class=\"v-branch\"><ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul></li>",
+  name: 'v-branch',
+  mixins: [eHubMixin],
+  props: {
+    data: {
+      type: Object,
+      require: true
+    },
+    uid: {
+      type: [Number, String],
+      require: true
+    }
+  },
+  components: {
+    'v-node': VNode,
+    'v-leaf': VLeaf
+  },
+  computed: {
+    branches: function branches() {
+      return this.data.branches;
+    },
+    leafs: function leafs() {
+      return this.data.leafs;
+    },
+    node: function node() {
+      return  this.data.node;
+    }
+  }
+};
+
+var i = 0;
+var pad = function (s) { return ("" + s).length < 4 ? ("0000" + s).slice(-4) : s; };
+var uid = function (_) { return pad(++i); };
+
+var VFolderComp = { template: "<ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul>",
+  name: 'v-folder',
+  mixins: [eHubMixin],
+  props: {
+    data: Object
+  },
+  components: {
+    'v-node': VNode,
+    'v-leaf': VLeaf,
+    'v-branch': VBranch
+  },
+  data: function data() {
+    return {
+      uid: uid()
+    };
+  },
+  computed: {
+    root: function root() {
+      return this.data;
+    },
+    branches: function branches() {
+      return this.root.branches;
+    },
+    leafs: function leafs() {
+      return this.root.leafs;
+    },
+    node: function node() {
+      return this.root.node;
+    }
+  },
+  created: function created() {
+    var this$1 = this;
+
+    this.listen('unfold', function (node) {
+      this$1.$emit('unfold', node);
+    });
+
+    this.listen('change', function (node) {
+      this$1.$emit('change', node);
+    });
+  }
+};
+
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+
+
+
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
+
+var index = createCommonjsModule(function (module, exports) {
+/* global define */
+(function (root, factory) {
+    /* istanbul ignore next */
+    if (typeof undefined === 'function' && undefined.amd) {
+        undefined([], factory);
+    } else {
+        module.exports = factory();
+    }
+}(commonjsGlobal, function () {
+
+    var semver = /^v?(?:0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)?)?$/i;
+    var patch = /-([0-9A-Za-z-.]+)/;
+
+    function split(v) {
+        var temp = v.split('.');
+        var arr = temp.splice(0, 2);
+        arr.push(temp.join('.'));
+        return arr;
+    }
+
+    function tryParse(v) {
+        return isNaN(Number(v)) ? v : Number(v);
+    }
+
+    function validate(version) {
+        if (typeof version !== 'string') {
+            throw new TypeError('Invalid argument expected string');
+        }
+        if (!semver.test(version)) {
+            throw new Error('Invalid argument not valid semver');
+        }
+    }
+
+    return function compareVersions(v1, v2) {
+        [v1, v2].forEach(validate);
+
+        var s1 = split(v1);
+        var s2 = split(v2);
+
+        for (var i = 0; i < 3; i++) {
+            var n1 = parseInt(s1[i] || 0, 10);
+            var n2 = parseInt(s2[i] || 0, 10);
+
+            if (n1 > n2) { return 1; }
+            if (n2 > n1) { return -1; }
+        }
+
+        if ([s1[2], s2[2]].every(patch.test.bind(patch))) {
+            var p1 = patch.exec(s1[2])[1].split('.').map(tryParse);
+            var p2 = patch.exec(s2[2])[1].split('.').map(tryParse);
+
+            for (i = 0; i < Math.max(p1.length, p2.length); i++) {
+                if (p1[i] === undefined || typeof p2[i] === 'string' && typeof p1[i] === 'number') { return -1; }
+                if (p2[i] === undefined || typeof p1[i] === 'string' && typeof p2[i] === 'number') { return 1; }
+
+                if (p1[i] > p2[i]) { return 1; }
+                if (p2[i] > p1[i]) { return -1; }
+            }
+        } else if ([s1[2], s2[2]].some(patch.test.bind(patch))) {
+            return patch.test(s1[2]) ? -1 : 1;
+        }
+
+        return 0;
+    };
+
+}));
+});
+
+var checkVersion = function () {
+  var compare = function (v1, v2) {
+    return index(v1, v2) >= 0;
+  };
+
+  // if must compile template
+  if (!compare(Vue.version, '2.0.0')) {
+    throw 'This module can only supports vue@2!';
+  }
+};
+
+var eventMix = function () {
+  var hub = new Vue();
+  var proto = Vue.prototype;
+
+  proto.___von = function (type, cb) {
+    var uid = this.uid;
+    var vm = this;
+    var fn = function(e) {
+      if (uid === e.uid && cb) {
+        cb(e.data);
+      }
+    };
+    hub.$on(("#" + uid + "@" + type), fn);
+  };
+
+  proto.___vemit = function (type, data) {
+    var uid = this.uid;
+    hub.$emit(("#" + uid + "@" + type), { data: data, uid: uid });
+  };
+
+  proto.___voff = function (type, fn) {
+    var uid = this.uid;
+
+    if (type) {
+      hub.$off(("#" + uid + "@" + type), fn);
+    } else {
+      uid = "#" + uid + "@";
+      var len = uid.length;
+      var types = Object.keys(hub._events);
+      var match = types.filter(function (k) { return k.indexOf(uid) === 0; });
+      match.forEach(function (k) {
+        hub.$off(k, fn);
+      });
+    }
+  };
+};
+
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
+
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
+
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
+
+	return Object(val);
+}
+
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+var index$1 = shouldUseNative() ? Object.assign : function (target, source) {
+	var arguments$1 = arguments;
+
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments$1[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
+
+var clone_1 = createCommonjsModule(function (module) {
+var clone = (function() {
+'use strict';
+
+var nativeMap;
+try {
+  nativeMap = Map;
+} catch(_) {
+  // maybe a reference error because no `Map`. Give it a dummy value that no
+  // value will ever be an instanceof.
+  nativeMap = function() {};
+}
+
+var nativeSet;
+try {
+  nativeSet = Set;
+} catch(_) {
+  nativeSet = function() {};
+}
+
+var nativePromise;
+try {
+  nativePromise = Promise;
+} catch(_) {
+  nativePromise = function() {};
+}
+
+/**
+ * Clones (copies) an Object using deep copying.
+ *
+ * This function supports circular references by default, but if you are certain
+ * there are no circular references in your object, you can save some CPU time
+ * by calling clone(obj, false).
+ *
+ * Caution: if `circular` is false and `parent` contains circular references,
+ * your program may enter an infinite loop and crash.
+ *
+ * @param `parent` - the object to be cloned
+ * @param `circular` - set to true if the object to be cloned may contain
+ *    circular references. (optional - true by default)
+ * @param `depth` - set to a number if the object is only to be cloned to
+ *    a particular depth. (optional - defaults to Infinity)
+ * @param `prototype` - sets the prototype to be used when cloning an object.
+ *    (optional - defaults to parent prototype).
+ * @param `includeNonEnumerable` - set to true if the non-enumerable properties
+ *    should be cloned as well. Non-enumerable properties on the prototype
+ *    chain will be ignored. (optional - false by default)
+*/
+function clone(parent, circular, depth, prototype, includeNonEnumerable) {
+  if (typeof circular === 'object') {
+    depth = circular.depth;
+    prototype = circular.prototype;
+    includeNonEnumerable = circular.includeNonEnumerable;
+    circular = circular.circular;
+  }
+  // maintain two arrays for circular references, where corresponding parents
+  // and children have the same index
+  var allParents = [];
+  var allChildren = [];
+
+  var useBuffer = typeof Buffer != 'undefined';
+
+  if (typeof circular == 'undefined')
+    { circular = true; }
+
+  if (typeof depth == 'undefined')
+    { depth = Infinity; }
+
+  // recurse this function so we don't reset allParents and allChildren
+  function _clone(parent, depth) {
+    // cloning null always returns null
+    if (parent === null)
+      { return null; }
+
+    if (depth === 0)
+      { return parent; }
+
+    var child;
+    var proto;
+    if (typeof parent != 'object') {
+      return parent;
+    }
+
+    if (parent instanceof nativeMap) {
+      child = new nativeMap();
+    } else if (parent instanceof nativeSet) {
+      child = new nativeSet();
+    } else if (parent instanceof nativePromise) {
+      child = new nativePromise(function (resolve, reject) {
+        parent.then(function(value) {
+          resolve(_clone(value, depth - 1));
+        }, function(err) {
+          reject(_clone(err, depth - 1));
+        });
+      });
+    } else if (clone.__isArray(parent)) {
+      child = [];
+    } else if (clone.__isRegExp(parent)) {
+      child = new RegExp(parent.source, __getRegExpFlags(parent));
+      if (parent.lastIndex) { child.lastIndex = parent.lastIndex; }
+    } else if (clone.__isDate(parent)) {
+      child = new Date(parent.getTime());
+    } else if (useBuffer && Buffer.isBuffer(parent)) {
+      child = new Buffer(parent.length);
+      parent.copy(child);
+      return child;
+    } else if (parent instanceof Error) {
+      child = Object.create(parent);
+    } else {
+      if (typeof prototype == 'undefined') {
+        proto = Object.getPrototypeOf(parent);
+        child = Object.create(proto);
+      }
+      else {
+        child = Object.create(prototype);
+        proto = prototype;
+      }
+    }
+
+    if (circular) {
+      var index = allParents.indexOf(parent);
+
+      if (index != -1) {
+        return allChildren[index];
+      }
+      allParents.push(parent);
+      allChildren.push(child);
+    }
+
+    if (parent instanceof nativeMap) {
+      var keyIterator = parent.keys();
+      while(true) {
+        var next = keyIterator.next();
+        if (next.done) {
+          break;
+        }
+        var keyChild = _clone(next.value, depth - 1);
+        var valueChild = _clone(parent.get(next.value), depth - 1);
+        child.set(keyChild, valueChild);
+      }
+    }
+    if (parent instanceof nativeSet) {
+      var iterator = parent.keys();
+      while(true) {
+        var next = iterator.next();
+        if (next.done) {
+          break;
+        }
+        var entryChild = _clone(next.value, depth - 1);
+        child.add(entryChild);
+      }
+    }
+
+    for (var i in parent) {
+      var attrs;
+      if (proto) {
+        attrs = Object.getOwnPropertyDescriptor(proto, i);
+      }
+
+      if (attrs && attrs.set == null) {
+        continue;
+      }
+      child[i] = _clone(parent[i], depth - 1);
+    }
+
+    if (Object.getOwnPropertySymbols) {
+      var symbols = Object.getOwnPropertySymbols(parent);
+      for (var i = 0; i < symbols.length; i++) {
+        // Don't need to worry about cloning a symbol because it is a primitive,
+        // like a number or string.
+        var symbol = symbols[i];
+        var descriptor = Object.getOwnPropertyDescriptor(parent, symbol);
+        if (descriptor && !descriptor.enumerable && !includeNonEnumerable) {
+          continue;
+        }
+        child[symbol] = _clone(parent[symbol], depth - 1);
+        if (!descriptor.enumerable) {
+          Object.defineProperty(child, symbol, {
+            enumerable: false
+          });
+        }
+      }
+    }
+
+    if (includeNonEnumerable) {
+      var allPropertyNames = Object.getOwnPropertyNames(parent);
+      for (var i = 0; i < allPropertyNames.length; i++) {
+        var propertyName = allPropertyNames[i];
+        var descriptor = Object.getOwnPropertyDescriptor(parent, propertyName);
+        if (descriptor && descriptor.enumerable) {
+          continue;
+        }
+        child[propertyName] = _clone(parent[propertyName], depth - 1);
+        Object.defineProperty(child, propertyName, {
+          enumerable: false
+        });
+      }
+    }
+
+    return child;
+  }
+
+  return _clone(parent, depth);
+}
+
+/**
+ * Simple flat clone using prototype, accepts only objects, usefull for property
+ * override on FLAT configuration object (no nested props).
+ *
+ * USE WITH CAUTION! This may not behave as you wish if you do not know how this
+ * works.
+ */
+clone.clonePrototype = function clonePrototype(parent) {
+  if (parent === null)
+    { return null; }
+
+  var c = function () {};
+  c.prototype = parent;
+  return new c();
+};
+
+// private utility functions
+
+function __objToStr(o) {
+  return Object.prototype.toString.call(o);
+}
+clone.__objToStr = __objToStr;
+
+function __isDate(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Date]';
+}
+clone.__isDate = __isDate;
+
+function __isArray(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object Array]';
+}
+clone.__isArray = __isArray;
+
+function __isRegExp(o) {
+  return typeof o === 'object' && __objToStr(o) === '[object RegExp]';
+}
+clone.__isRegExp = __isRegExp;
+
+function __getRegExpFlags(re) {
+  var flags = '';
+  if (re.global) { flags += 'g'; }
+  if (re.ignoreCase) { flags += 'i'; }
+  if (re.multiline) { flags += 'm'; }
+  return flags;
+}
+clone.__getRegExpFlags = __getRegExpFlags;
+
+return clone;
+})();
+
+if ('object' === 'object' && module.exports) {
+  module.exports = clone;
+}
+});
+
+function transform$1(data, conf, level, path) {
+  if ( data === void 0 ) data = {};
+  if ( conf === void 0 ) conf = {};
+  if ( level === void 0 ) level = '0';
+  if ( path === void 0 ) path = '';
+
+  var newConf = index$1({}, conf, {
+    node: 'name',
+    branch: 'dirs',
+    leaf: 'files',
+    open: false,
+    checked: false
+  });
+  
+  var node = newConf.node;
+  var branch = newConf.branch;
+  var leaf = newConf.leaf;
+  var checked = newConf.checked;
+  var open = newConf.open;
+  var name = data[node] || '/';
+  var branches = data[branch] || [];
+  var leafs   = data[leaf] || [];
+  var canOpen  = branches.length > 0 || leafs.length > 0;
+
+  branches = branches.map(function (branch, i) {
+    return transform$1(branch, newConf, (level + "." + i), (path + "/" + (branch.name)));
+  });
+  
+  leafs = leafs.map(function (leaf, i) {
+    return {
+      name: leaf,
+      type: 'leaf',
+      checked: checked,
+      level: (level + "." + i),
+      path: (path + "/" + leaf)
+    };
+  });
+
+  return {
+    name: name,
+    type: 'branch',
+    level: level,
+    path: path,
+    node: { name: name, open: open, canOpen: canOpen, checked: checked, level: level, path: path, type: 'node' },
+    branches: branches,
+    leafs: leafs,
+  };
+}
+
+var arrPush = [].push;
+var noop = function (_) { return _; };
+
+var Store = function Store(data, conf) {
+  this.dataStore = transform$1(data, conf);
+};
+
+/**
+ * set data store
+ * @private
+ */
+Store.prototype.replace = function replace (newTree) {
+  this.dataStore = newTree;
+};
+
+/**
+ * get parent branch by levelId.
+ * result for a leaf is the branch it is on,
+ * for a branch,result is it's parent branch.
+ * 
+ * @private
+ * @param levelId
+ */
+Store.prototype.findParentBranch = function findParentBranch (levelId) {
+    if ( levelId === void 0 ) levelId = '';
+
+  var length = levelId.length;
+  var branch = this.dataStore;
+
+  if (length <= 1) {
+    return null;
+  }
+    
+  var lvs  = levelId.split('.').slice(1, -1);
+  var index= 0;
+
+  while (branch && (index = lvs.shift())) {
+    branch = branch.branches[index];
+  }
+
+  return branch;
+};
+
+/**
+ * get current branch
+ * 
+ * @private
+ * @param levelId 
+ */
+Store.prototype.findCurrentBranch = function findCurrentBranch (levelId) {
+    if ( levelId === void 0 ) levelId = '';
+
+  var lvs  = levelId.split('.').slice(1);
+  var index= 0;
+  var branch = this.dataStore;
+
+  while (branch && (index = lvs.shift())) {
+    branch = branch.branches[index];
+  }
+
+  return branch;
+};
+
+/**
+ * check ascendents of certain level rescursively
+ * to see if they should get checked
+ * 
+ * @private
+ * @param branch  the descendent branch
+ * @param checkedif the descendent is checked
+ */
+Store.prototype.checkBranchAscendents = function checkBranchAscendents (branch, checked) {
+  var nextStatus = false;
+
+  if (branch) {
+    if (checked) {
+      var allBranchesChecked = !branch.branches.some(function (b) { return !b.node.checked; });
+      var allLeavesChecked = !branch.leafs.some(function (l) { return !l.checked; });
+      nextStatus = allBranchesChecked && allLeavesChecked;
+    }
+
+    branch.node.checked = nextStatus;
+    this.checkBranchAscendents(this.findParentBranch(branch.level), nextStatus);
+  }
+};
+
+/**
+ * check branch children and decendents.
+ * if node is checked, all children are checked too and vice versa.
+ *
+ * @private
+ * @param branch current descendent branch
+ * @param checkedif the ascendent is checked
+ */
+Store.prototype.checkBranchDescendents = function checkBranchDescendents (branch, checked) {
+    var this$1 = this;
+
+  branch.node.checked = checked;
+  branch.leafs.forEach(function (l) { return l.checked = checked; });
+  branch.branches.forEach(function (b) {
+    b.node.checked = checked;
+    this$1.checkBranchDescendents(b, checked);
+  });
+};
+
+/************************************************************************
+ * * * * * * * * * * * * Public Method Below * * * * * * * * * * * * * * 
+ ************************************************************************/
+/**
+ * if one node is checked/unchecked,
+ * we have to check/uncheck all ites descendents,
+ * and find if its ascendents should be checked.
+ * 
+ * @param levellevel of the node checked/unchecked
+ */
+Store.prototype.checkNode = function checkNode (node) {
+  var branch = this.findCurrentBranch(node.level);
+  var nextState = !branch.node.checked;
+  this.checkBranchDescendents(branch, nextState);
+  this.checkBranchAscendents(this.findParentBranch(branch.level), nextState);
+};
+  
+/**
+ * if a leaf is checked,
+ * we have to check all its ascendents
+ * to see if any should get checked to.
+ * 
+ * @param leaf
+ */
+Store.prototype.checkLeaf = function checkLeaf (leaf) {
+  var leafBranch = this.findParentBranch(leaf.level);
+  var nextState = !leaf.checked;
+  leaf.checked = nextState;
+  this.checkBranchAscendents(leafBranch, nextState);
+};
+
+ /**
+  * merge a branch to current tree
+  * @param branch
+  */
+Store.prototype.merge = function merge (
+  data,
+  node,
+  conf
+) {
+    if ( data === void 0 ) data = {};
+    if ( node === void 0 ) node = {
+    level: '0',
+    path: ''
+  };
+
+  var level = node.level;
+    var path = node.path;
+    var checked = node.checked;
+  var branch = transform$1(data, conf, level, path);
+  var clone= clone_1(this.dataStore);
+
+  var top = clone;
+  var lvs = level.split('.').slice(1);
+  var pos = lvs.pop();
+  var index = 0;
+
+  while (index = lvs.shift()) {
+    top = top.branches[index];
+  }
+
+  top.branches[pos] = branch;
+  branch.node.open = true;
+  branch.node.checked = checked;
+
+  // TODO
+  this.replace(clone);
+  // Object.keys(branch).forEach(key => {
+  // Vue.set(this.dataStore, key, branch[key]);
+  // });
+
+  this.checkBranchDescendents(branch, checked);
+};
+
+/**
+ * deal with actions
+ */
+Store.prototype.commit = function commit (action, elem, callback) {
+    if ( callback === void 0 ) callback = noop;
+
+  var isNode = elem.type === 'node';
+    
+  switch (action) {
+    case 'change':
+      this[isNode ? 'checkNode' : 'checkLeaf'](elem);
+      callback(this.getPathResult());
+      break;
+
+    case 'fold':
+      if (isNode) {
+        elem.open = !elem.open;
+        callback(elem.canOpen);
+      }
+      break;
+  }
+};
+
+/**
+ * get result as path
+ */
+Store.prototype.getPathResult = function getPathResult (branch) {
+    var this$1 = this;
+
+  branch = branch || this.dataStore;
+
+  var result = [];
+  var node = branch.node;
+    var branches = branch.branches;
+    var leafs = branch.leafs;
+    var path = branch.path;
+
+  if (node.checked) {
+    result.push(branch.path);
+  } else {
+    leafs.forEach(function (ref) {
+        var checked = ref.checked;
+        var path = ref.path;
+
+      if (checked) {
+        result.push(path);
+      }
+    });
+
+    branches.forEach(function (branch) {
+      arrPush.apply(result, this$1.getPathResult(branch));
+    });
+  }
+
+  return result;
+};
+
+VFolderComp.install = function (Vue) {
+  checkVersion(Vue);
+  eventMix(Vue);
+  Vue.component(VFolderComp.name, VFolderComp);
+};
+Vue.use(VFolderComp);
+
+var NEW_FOLDER = {
+  name: 'new folder',
+  dirs: [{name: 'empty folder'}],
+  files: ['1.js', '2.js']
+};
+
+new Vue({
+  el: '#app',
+  template: '<v-folder :data="data" @change="change" @unfold="unfold"></v-folder>',
+  data: {
+    store: new Store(NEW_FOLDER)
+  },
+  computed: {
+    data: function data() {
+      return this.store.dataStore;
+    }
+  },
+  methods: {
+    change: function change(elem) {
+      this.store.commit('change', elem, function (result) {
+        console.log(result);
+      });
+    },
+    unfold: function unfold(elem) {
+      var this$1 = this;
+
+      this.store.commit('fold', elem, function (_) {
+        setTimeout(function () {
+          // TODO
+          // 根节点空
+          // 则不会有任何效果
+          this$1.store.merge(NEW_FOLDER, elem);
+        }, 200);
+      });
+    }
+  },
+  created: function created() {
+    // this.store.merge({
+    //   name: 22,
+    //   files: [1, 2, 4],
+    //   dirs: []
+    // });
+  }
+});
+
+})));
 //# sourceMappingURL=bundle.common.js.map

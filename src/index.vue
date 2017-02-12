@@ -7,17 +7,19 @@
 </template>
 
 <script>
-  import Store from './store';
+  import eHubMixin from './mixin';
   import VNode from './v-node.vue';
   import VLeaf from './v-leaf.vue';
   import VBranch from './v-branch.vue';
-  let uid = 2333;
+  let i = 0;
+  let pad = s => `${s}`.length < 4 ? `0000${s}`.slice(-4) : s;
+  let uid = _ => pad(++i);
 
   export default {
     name: 'v-folder',
+    mixins: [eHubMixin],
     props: {
-      data: Object,
-      conf: Object
+      data: Object
     },
     components: {
       'v-node': VNode,
@@ -25,15 +27,14 @@
       'v-branch': VBranch
     },
     data() {
-      let store = new Store(this.data, this.conf);
-
       return {
-        uid: uid++,
-        store,
-        root: store.dataStore
+        uid: uid()
       };
     },
     computed: {
+      root() {
+        return this.data;
+      },
       branches() {
         return this.root.branches;
       },
@@ -45,22 +46,13 @@
       }
     },
     created() {
-      this.$von('NODE_OPEN', node => {
-        this.store.expandNode(node);
+      this.listen('unfold', node => {
+        this.$emit('unfold', node);
       });
 
-      this.$von('NODE_CHECK', node => {
-        this.store.checkNode(node);
-        this.$vemit('change', this.store.getPathResult());
+      this.listen('change', node => {
+        this.$emit('change', node);
       });
-
-      this.$von('LEAF_CHECK', leaf => {
-        this.store.checkLeaf(leaf);
-        this.$emit('change', this.store.getPathResult());
-      });
-    },
-    destroyed () {
-      this.$voff();
     }
   };
 </script>

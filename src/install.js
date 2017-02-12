@@ -6,7 +6,7 @@ export const checkVersion = function () {
   };
 
   // if must compile template
-  if (procee.env.MODE === 'compile') {
+  if (process.env.MODE === 'compile') {
     // `compileTemplate: true` will error
     // before version 2.1.5
     if (!compare(Vue.version, '2.1.5')) {
@@ -21,11 +21,10 @@ export const checkVersion = function () {
 };
 
 export const eventMix = function () {
-  // inject a eventbus
   let hub = new Vue();
   let proto = Vue.prototype;
 
-  proto.$von = function (type, cb) {
+  proto.___von = function (type, cb) {
     let uid = this.uid;
     let vm = this;
     let fn = function(e) {
@@ -33,36 +32,24 @@ export const eventMix = function () {
         cb(e.data);
       }
     };
-    hub.$on(`@${uid}:${type}`, fn);
+    hub.$on(`#${uid}@${type}`, fn);
   };
 
-  proto.$vonce = function (type, cb) {
+  proto.___vemit = function (type, data) {
     let uid = this.uid;
-    let vm = this;
-    let fn = function(e) {
-      console.log(e)
-      if (uid === e.uid && cb) {
-        cb(e.data);
-      }
-    };
-    hub.$once(`@${uid}:${type}`, fn);
+    hub.$emit(`#${uid}@${type}`, { data, uid });
   };
 
-  proto.$vemit = function (type, data) {
-    let uid = this.uid;
-    hub.$emit(`@${uid}:${type}`, { data, uid });
-  };
-
-  proto.$voff = function (type, fn) {
+  proto.___voff = function (type, fn) {
     let uid = this.uid;
 
     if (type) {
-      hub.$off(`@${uid}:${type}`, fn);
+      hub.$off(`#${uid}@${type}`, fn);
     } else {
-      uid = `@${uid}:`
+      uid = `#${uid}@`
       let len = uid.length;
       let types = Object.keys(hub._events);
-      let match = types.filter(k => key.indexOf(uid) === 0);
+      let match = types.filter(k => k.indexOf(uid) === 0);
       match.forEach(k => {
         hub.$off(k, fn);
       })

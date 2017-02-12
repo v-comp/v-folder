@@ -4,10 +4,9 @@
   "description": "vue tree select component",
   "main": "index.js",
   "scripts": {
-    "test": "ava",
     "clean": "rimraf ./dist/*",
     "bundle": "rollup -c rollup.config.js",
-    "watch": "cross-env MODE=common rollup  -c rollup.config.js -w",
+    "watch": "cross-env MODE=common ENV=prod rollup  -c rollup.config.js -w",
     "serv": "serv",
     "build:compile": "cross-env MODE=common npm run bundle",
     "build:common": "cross-env MODE=compile npm run bundle",
@@ -26,8 +25,8 @@
   },
   "homepage": "https://github.com/AngusFu/v-folder#readme",
   "devDependencies": {
-    "ava": "^0.18.1",
     "cross-env": "^3.1.4",
+    "lodash": "^4.17.4",
     "npm-run-all": "^4.0.1",
     "rimraf": "^2.5.4",
     "rollup": "^0.41.4",
@@ -41,6 +40,7 @@
     "serv": "^0.2.4"
   },
   "dependencies": {
+    "clone": "^2.1.0",
     "compare-versions": "^3.0.0",
     "object-assign": "^4.1.1",
     "vue": "^2.1.10"

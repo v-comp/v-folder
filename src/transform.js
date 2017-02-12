@@ -1,4 +1,4 @@
-const objectAssign = require('object-assign');
+import objectAssign from 'object-assign';
 
 /**
  * standardlize a normal tree object
@@ -7,8 +7,15 @@ const objectAssign = require('object-assign');
  * @param conf   contains keys to extract data from `data`
  * @param level  identifier inferring depth
  */
-const transform = (data = {}, conf = {}, level = '0', path = '') => {
-  let newConf = objectAssign({}, conf, defaultConf);
+export default transform;
+function transform(data = {}, conf = {}, level = '0', path = '') {
+  let newConf = objectAssign({}, conf, {
+    node: 'name',
+    branch: 'dirs',
+    leaf: 'files',
+    open: false,
+    checked: false
+  });
   
   let { node, branch, leaf, checked, open } = newConf;
   let name = data[node] || '/';
@@ -22,8 +29,9 @@ const transform = (data = {}, conf = {}, level = '0', path = '') => {
   
   leafs = leafs.map((leaf, i) => {
     return {
-      checked,
       name: leaf,
+      type: 'leaf',
+      checked,
       level: `${level}.${i}`,
       path: `${path}/${leaf}`
     };
@@ -31,23 +39,11 @@ const transform = (data = {}, conf = {}, level = '0', path = '') => {
 
   return {
     name,
+    type: 'branch',
     level,
     path,
-    node: { name, open, canOpen, checked, level },
+    node: { name, open, canOpen, checked, level, path, type: 'node' },
     branches,
-    leafs
+    leafs,
   };
-};
-
-const defaultConf = {
-  node: 'name',
-  branch: 'dirs',
-  leaf: 'files',
-  open: false,
-  checked: false
-};
-
-module.exports = {
-  transform,
-  defaultConf
 };

@@ -3,9 +3,9 @@
     <i
       class="fa"
       :class="[ data.canOpen && data.open ? 'fa-folder-open-o' : 'fa-folder-o' ]"
-      @click="notify('NODE_OPEN')"
+      @click="notify('unfold')"
     ></i>
-    <span @click="notify('NODE_CHECK')">
+    <span @click="notify('change')">
       <i class="fa" :class="[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]"></i>
       {{data.name}}
     </span>
@@ -13,7 +13,7 @@
 </template>
 
 <script>
-  import notifyMixin from './mixin.js';
+  import eHubMixin from './mixin';
 
   export default {
     props: {
@@ -26,6 +26,6 @@
         require: true
       }
     },
-    mixins: [notifyMixin]
+    mixins: [eHubMixin]
   };
 </script>

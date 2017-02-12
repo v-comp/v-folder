@@ -5,7 +5,7 @@ import vue from 'rollup-plugin-vue';
 import uglify from 'rollup-plugin-uglify';
 import replace from 'rollup-plugin-replace';
 
-let MODE = process.env.MODE;
+let { MODE, ENV } = process.env;
 
 export default {
   entry: './src/index.js',
@@ -16,21 +16,22 @@ export default {
   moduleName: 'vFolder',
   plugins: [
     replace({
-      'procee.env.MODE': JSON.stringify(MODE)
+      'process.env.MODE': JSON.stringify(MODE),
+      'process.env.ENV': JSON.stringify(ENV)
     }),
-    commonjs(),
     vue({
       css: `dist/bundle.css`,
       compileTemplate: process.env.MODE === 'compile'
     }),
-    buble({
-      objectAssign: 'Object.assign'
-    }),
+    commonjs(),
     resolve({
       jsnext: true,
       main: true,
       browser: true
     }),
-    uglify()
+    buble({
+      objectAssign: 'Object.assign'
+    }),
+    // uglify()
   ]
 };
