@@ -1,38 +1,24 @@
 <template>
-  <li class="v-leaf" @click="toggleChecked" :key="data.level">
+  <li class="v-leaf" @click="notify('LEAF_CHECK')" :key="data.level">
     <i class="fa" :class="[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]"></i>
     {{data.name}}
   </li>
 </template>
 
 <script>
-  import Mixin from './mixin';
+  import notifyMixin from './event.mixin.js';
 
   export default {
     props: {
-      data: Object
-    },
-    mixins: [Mixin],
-    methods: {
-      toggleChecked() {
-        this.__EVENT_BUS.$emit('leaf_toggle_checked', this.data);
+      data: {
+        type: Object,
+        require: true
+      },
+      uid: {
+        type: [Number, String],
+        require: true
       }
     },
-    created() {}
+    mixins: [notifyMixin]
   };
 </script>
-
-<style scoped>
-  .v-leaf {
-    margin-left: 27px;
-    cursor: pointer;
-  }
-  .v-leaf .fa {
-    width: 20px;
-    color: #0d83e6;
-    text-align: center;
-  }
-  .v-leaf .fa:hover {
-    color: #0c71c5;
-  }
-</style>

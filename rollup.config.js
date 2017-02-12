@@ -20,7 +20,7 @@ export default {
     }),
     commonjs(),
     vue({
-      css: false,
+      css: `dist/bundle.css`,
       compileTemplate: process.env.MODE === 'compile'
     }),
     buble({

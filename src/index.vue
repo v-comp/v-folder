@@ -1,8 +1,8 @@
 <template lang="html">
-  <ul class="branch">
-    <v-node :data="node"></v-node>
-    <v-branch v-show="node.open" v-for="branch in branches" :data="branch"></v-branch>
-    <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf"></v-leaf>
+  <ul class="v-branch-body">
+    <v-node :data="node" :uid="uid"></v-node>
+    <v-branch v-show="node.open" v-for="branch in branches" :data="branch" :uid="uid"></v-branch>
+    <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf" :uid="uid"></v-leaf>
   </ul>
 </template>
 
@@ -11,6 +11,7 @@
   import VNode from './v-node.vue';
   import VLeaf from './v-leaf.vue';
   import VBranch from './v-branch.vue';
+  let uid = 2333;
 
   export default {
     name: 'v-folder',
@@ -27,6 +28,7 @@
       let store = new Store(this.data, this.conf);
 
       return {
+        uid: uid++,
         store,
         root: store.dataStore
       };
@@ -43,51 +45,87 @@
       }
     },
     created() {
-      this.__EVENT_BUS.$on('node_toggle_expanded', node => {
-        node.open = !node.open;
+      this.$von('NODE_OPEN', node => {
+        this.store.expandNode(node);
       });
 
-      this.__EVENT_BUS.$on('node_toggle_checked', node => {
-        let branch = this.store.findCurrentBranch(node.level);
-        let level  = branch.level;
-        let nextState = !branch.node.checked;
-        
-        branch.node.checked = nextState;
-        branch.branches.forEach(b => b.node.checked = nextState);
-        branch.leafs.forEach(l => l.checked = nextState);
-
-        this.store.checkAscendents(level, nextState);
-        this.__EVENT_BUS.$emit('descendents_force_checked', branch.level, nextState);
-
-        this.$nextTick(() => {
-          this.$emit('change', this.store.getPathResult());
-        });
+      this.$von('NODE_CHECK', node => {
+        this.store.checkNode(node);
+        this.$vemit('change', this.store.getPathResult());
       });
 
-      this.__EVENT_BUS.$on('leaf_toggle_checked', leaf => {
-        let nextState = !leaf.checked;
-        leaf.checked = nextState;
-        this.store.checkAscendents(leaf.level, nextState);
-
-        this.$nextTick(() => {
-          this.$emit('change', this.store.getPathResult());
-        });
+      this.$von('LEAF_CHECK', leaf => {
+        this.store.checkLeaf(leaf);
+        this.$emit('change', this.store.getPathResult());
       });
+    },
+    destroyed () {
+      this.$voff();
     }
   };
 </script>
 
-<style scoped>
-  .branch {
+<style>
+  /*----------------------------------------------------------------
+                            .v-branch
+  ---------------------------------------------------------------*/
+  .v-branch-body {
+    padding: 0;
+    font-size: 18px;
+    color: #666;
+    list-style: none;
     -moz-user-select: none;
     -ms-user-select: none;
     -webkit-user-select: none;
     user-select: none;
-    color: #666;
-    font-size: 18px;
   }
-  .branch > .branch {
+  .v-branch-body .v-branch {
     margin-left: 27px;
+  }
+  .v-branch ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  /*----------------------------------------------------------------
+                            .v-node
+  ---------------------------------------------------------------*/
+  .v-node {
+    padding: 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  .v-node .fa {
+    width: 20px;
+    color: #0d83e6;
+    text-align: center;
+  }
+  .v-node .fa:hover {
+    color: #0c71c5;
+  }
+
+  /*----------------------------------------------------------------
+                            .v-leaf
+  ---------------------------------------------------------------*/
+  .v-leaf {
+    padding: 0;
+    margin: 0 0 0 27px;
+    cursor: pointer;
+  }
+  .v-leaf .fa {
+    display: inline-block;
+    width: 20px;
+    color: #0d83e6;
+    text-align: center;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale
+  }
+  .v-leaf .fa:hover {
+    color: #0c71c5;
   }
 </style>
 

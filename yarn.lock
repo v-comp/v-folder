@@ -760,8 +760,8 @@ ci-info@^1.0.0:
   resolved "http://registry.npm.taobao.org/ci-info/download/ci-info-1.0.0.tgz#dc5285f2b4e251821683681c381c3388f46ec534"
 
 clean-css@4.0.x:
-  version "4.0.5"
-  resolved "http://registry.npm.taobao.org/clean-css/download/clean-css-4.0.5.tgz#6a48c30dad03ebe425d209fc282baa53d36c92ca"
+  version "4.0.6"
+  resolved "http://registry.npm.taobao.org/clean-css/download/clean-css-4.0.6.tgz#992cf37c1064dafbca7f42b522837b411b87cab5"
   dependencies:
     source-map "0.5.x"
 
@@ -955,15 +955,9 @@ de-indent@^1.0.2:
   version "1.0.2"
   resolved "http://registry.npm.taobao.org/de-indent/download/de-indent-1.0.2.tgz#b2038e846dc33baa5796128d0804b455b8c1e21d"
 
-debug@^2.1.1, debug@^2.2.0:
+debug@^2.1.1, debug@^2.2.0, debug@^2.6.0:
   version "2.6.1"
   resolved "http://registry.npm.taobao.org/debug/download/debug-2.6.1.tgz#79855090ba2c4e3115cc7d8769491d58f0491351"
-  dependencies:
-    ms "0.7.2"
-
-debug@^2.6.0:
-  version "2.6.0"
-  resolved "http://registry.npm.taobao.org/debug/download/debug-2.6.0.tgz#bc596bcabe7617f11d9fa15361eded5608b8499b"
   dependencies:
     ms "0.7.2"
 

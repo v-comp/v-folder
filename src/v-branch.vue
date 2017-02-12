@@ -1,9 +1,11 @@
 <template>
-  <ul class="branch" :key="node.level">
-    <v-node :data="node"></v-node>
-    <v-branch v-show="node.open" v-for="branch in branches" :data="branch"></v-branch>
-    <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf"></v-leaf>
-  </ul>
+  <li :key="node.level" class="v-branch">
+    <ul class="v-branch-body">
+      <v-node :data="node" :uid="uid"></v-node>
+      <v-branch v-show="node.open" v-for="branch in branches" :data="branch" :uid="uid"></v-branch>
+      <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf" :uid="uid"></v-leaf>
+    </ul>
+  </li>
 </template>
 
 <script>
@@ -13,7 +15,14 @@
   export default {
     name: 'v-branch',
     props: {
-      data: Object
+      data: {
+        type: Object,
+        require: true
+      },
+      uid: {
+        type: [Number, String],
+        require: true
+      }
     },
     components: {
       'v-node': VNode,
