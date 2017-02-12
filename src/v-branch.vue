@@ -9,21 +9,19 @@
 </template>
 
 <script>
-  import eHubMixin from './mixin';
   import VLeaf from './v-leaf.vue';
   import VNode from './v-node.vue';
 
   export default {
     name: 'v-branch',
-    mixins: [eHubMixin],
     props: {
       data: {
         type: Object,
-        require: true
+        required: true
       },
       uid: {
-        type: [Number, String],
-        require: true
+        type: [String, Number],
+        required: true
       }
     },
     components: {

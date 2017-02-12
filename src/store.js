@@ -146,27 +146,28 @@ export default class Store {
     conf
   ) {
     let { level, path, checked } = node;
-    let branch = transform(data, conf, level, path);
-    let clone  = deepClone(this.dataStore);
-
-    let top = clone;
     let lvs = level.split('.').slice(1);
-    let pos = lvs.pop();
-    let index = 0;
-
-    while (index = lvs.shift()) {
-      top = top.branches[index];
-    }
-
-    top.branches[pos] = branch;
+    let branch = transform(data, conf, level, path);
     branch.node.open = true;
     branch.node.checked = checked;
 
-    // TODO
-    this.replace(clone);
-    // Object.keys(branch).forEach(key => {
-    //   Vue.set(this.dataStore, key, branch[key]);
-    // });
+    if (lvs.length === 0) {
+      this.replace(branch);
+    } else {
+      let clone = deepClone(this.dataStore);
+      let top   = clone;
+      let pos   = lvs.pop();
+      let index = 0;
+
+      while (index = lvs.shift()) {
+        top = top.branches[index];
+      }
+      top.branches.splice(pos, 1, branch);
+      top.node.canOpen = true;
+
+      this.replace(clone);
+    }
+
 
     this.checkBranchDescendents(branch, checked);
   }
@@ -186,7 +187,7 @@ export default class Store {
       case 'fold':
         if (isNode) {
           elem.open = !elem.open;
-          callback(elem.canOpen);
+          elem.canOpen || elem.status === 'done' || callback();
         }
         break;
     }

@@ -1,56 +1,64 @@
 import VFolderComp from './index.vue';
+import EventMixin from './mixin';
 import { checkVersion, eventMix } from './install';
 
 VFolderComp.install = Vue => {
   checkVersion(Vue)
   eventMix(Vue);
+  Vue.mixin(EventMixin);
   Vue.component(VFolderComp.name, VFolderComp);
 };
 Vue.use(VFolderComp);
 
-import Store from './store';
-import deepClone from 'clone';
 
-
-let NEW_FOLDER = {
+let DATA = {
   name: 'new folder',
   dirs: [{name: 'empty folder'}],
   files: ['1.js', '2.js']
 };
+let EMPTY = {
+  name: 'empty',
+  dirs: [],
+  files: []
+};
 
 new Vue({
   el: '#app',
-  template: '<v-folder :data="data" @change="change" @unfold="unfold"></v-folder>',
-  data: {
-    store: new Store(NEW_FOLDER)
-  },
-  computed: {
-    data() {
-      return this.store.dataStore;
-    }
+  template: `
+    <div>
+      <v-folder
+        :uid="uid"
+        :data="data"
+        :ajax="ajax"
+        @change="onChange"
+        @request="onRequest"
+      ></v-folder>
+    </div>
+  `,
+  data() {
+    return {
+      uid: '23333',
+      data: {
+        name: '根目录',
+        files: ['1.js', '2.js'],
+        dirs: [{name: 'empty folder'}, {name: 'empty folder'}, {name: 'empty folder'}]
+      },
+      ajax: {}
+    };
   },
   methods: {
-    change(elem) {
-      this.store.commit('change', elem, result => {
-        console.log(result);
+    onChange(result) {
+      console.log(result);
+    },
+    onRequest(node, done) {
+      this.fetch(node).then(data => {
+        done(data);
       });
     },
-    unfold(elem) {
-      this.store.commit('fold', elem, _ => {
-        setTimeout(() => {
-          // TODO
-          // 根节点空
-          // 则不会有任何效果
-          this.store.merge(NEW_FOLDER, elem);
-        }, 200);
+    fetch(node) {
+      return new Promise(res => {
+        setTimeout(() => res(Math.random() > .7 ? EMPTY : DATA), 5000);
       });
     }
-  },
-  created() {
-    // this.store.merge({
-    //   name: 22,
-    //   files: [1, 2, 4],
-    //   dirs: []
-    // });
   }
 });

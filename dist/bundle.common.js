@@ -4,257 +4,6 @@
 	(factory());
 }(this, (function () { 'use strict';
 
-var eHubMixin = {
-  methods: {
-    notify: function notify(type) {
-      {
-        console.info('[event type]:', type);
-      }
-      this.___vemit(type, this.data);
-    },
-    listen: function listen(type, fn) {
-      this.___von(type, function (e) {
-        fn(e);
-      });
-    }
-  },
-  destroyed: function destroyed() {
-    this.___voff();
-  }
-};
-
-var VNode = { template: "<li class=\"v-node\" :key=\"data.level\"><i class=\"fa\" :class=\"[ data.canOpen && data.open ? 'fa-folder-open-o' : 'fa-folder-o' ]\" @click=\"notify('unfold')\"></i> <span @click=\"notify('change')\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</span></li>",
-  props: {
-    data: {
-      type: Object,
-      require: true
-    },
-    uid: {
-      type: [Number, String],
-      require: true
-    }
-  },
-  mixins: [eHubMixin]
-};
-
-var VLeaf = { template: "<li class=\"v-leaf\" @click=\"notify('change')\" :key=\"data.level\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</li>",
-  props: {
-    data: {
-      type: Object,
-      require: true
-    },
-    uid: {
-      type: [Number, String],
-      require: true
-    }
-  },
-  mixins: [eHubMixin]
-};
-
-var VBranch = { template: "<li :key=\"node.level\" class=\"v-branch\"><ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul></li>",
-  name: 'v-branch',
-  mixins: [eHubMixin],
-  props: {
-    data: {
-      type: Object,
-      require: true
-    },
-    uid: {
-      type: [Number, String],
-      require: true
-    }
-  },
-  components: {
-    'v-node': VNode,
-    'v-leaf': VLeaf
-  },
-  computed: {
-    branches: function branches() {
-      return this.data.branches;
-    },
-    leafs: function leafs() {
-      return this.data.leafs;
-    },
-    node: function node() {
-      return  this.data.node;
-    }
-  }
-};
-
-var i = 0;
-var pad = function (s) { return ("" + s).length < 4 ? ("0000" + s).slice(-4) : s; };
-var uid = function (_) { return pad(++i); };
-
-var VFolderComp = { template: "<ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul>",
-  name: 'v-folder',
-  mixins: [eHubMixin],
-  props: {
-    data: Object
-  },
-  components: {
-    'v-node': VNode,
-    'v-leaf': VLeaf,
-    'v-branch': VBranch
-  },
-  data: function data() {
-    return {
-      uid: uid()
-    };
-  },
-  computed: {
-    root: function root() {
-      return this.data;
-    },
-    branches: function branches() {
-      return this.root.branches;
-    },
-    leafs: function leafs() {
-      return this.root.leafs;
-    },
-    node: function node() {
-      return this.root.node;
-    }
-  },
-  created: function created() {
-    var this$1 = this;
-
-    this.listen('unfold', function (node) {
-      this$1.$emit('unfold', node);
-    });
-
-    this.listen('change', function (node) {
-      this$1.$emit('change', node);
-    });
-  }
-};
-
-var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
-
-
-
-
-
-function createCommonjsModule(fn, module) {
-	return module = { exports: {} }, fn(module, module.exports), module.exports;
-}
-
-var index = createCommonjsModule(function (module, exports) {
-/* global define */
-(function (root, factory) {
-    /* istanbul ignore next */
-    if (typeof undefined === 'function' && undefined.amd) {
-        undefined([], factory);
-    } else {
-        module.exports = factory();
-    }
-}(commonjsGlobal, function () {
-
-    var semver = /^v?(?:0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)?)?$/i;
-    var patch = /-([0-9A-Za-z-.]+)/;
-
-    function split(v) {
-        var temp = v.split('.');
-        var arr = temp.splice(0, 2);
-        arr.push(temp.join('.'));
-        return arr;
-    }
-
-    function tryParse(v) {
-        return isNaN(Number(v)) ? v : Number(v);
-    }
-
-    function validate(version) {
-        if (typeof version !== 'string') {
-            throw new TypeError('Invalid argument expected string');
-        }
-        if (!semver.test(version)) {
-            throw new Error('Invalid argument not valid semver');
-        }
-    }
-
-    return function compareVersions(v1, v2) {
-        [v1, v2].forEach(validate);
-
-        var s1 = split(v1);
-        var s2 = split(v2);
-
-        for (var i = 0; i < 3; i++) {
-            var n1 = parseInt(s1[i] || 0, 10);
-            var n2 = parseInt(s2[i] || 0, 10);
-
-            if (n1 > n2) { return 1; }
-            if (n2 > n1) { return -1; }
-        }
-
-        if ([s1[2], s2[2]].every(patch.test.bind(patch))) {
-            var p1 = patch.exec(s1[2])[1].split('.').map(tryParse);
-            var p2 = patch.exec(s2[2])[1].split('.').map(tryParse);
-
-            for (i = 0; i < Math.max(p1.length, p2.length); i++) {
-                if (p1[i] === undefined || typeof p2[i] === 'string' && typeof p1[i] === 'number') { return -1; }
-                if (p2[i] === undefined || typeof p1[i] === 'string' && typeof p2[i] === 'number') { return 1; }
-
-                if (p1[i] > p2[i]) { return 1; }
-                if (p2[i] > p1[i]) { return -1; }
-            }
-        } else if ([s1[2], s2[2]].some(patch.test.bind(patch))) {
-            return patch.test(s1[2]) ? -1 : 1;
-        }
-
-        return 0;
-    };
-
-}));
-});
-
-var checkVersion = function () {
-  var compare = function (v1, v2) {
-    return index(v1, v2) >= 0;
-  };
-
-  // if must compile template
-  if (!compare(Vue.version, '2.0.0')) {
-    throw 'This module can only supports vue@2!';
-  }
-};
-
-var eventMix = function () {
-  var hub = new Vue();
-  var proto = Vue.prototype;
-
-  proto.___von = function (type, cb) {
-    var uid = this.uid;
-    var vm = this;
-    var fn = function(e) {
-      if (uid === e.uid && cb) {
-        cb(e.data);
-      }
-    };
-    hub.$on(("#" + uid + "@" + type), fn);
-  };
-
-  proto.___vemit = function (type, data) {
-    var uid = this.uid;
-    hub.$emit(("#" + uid + "@" + type), { data: data, uid: uid });
-  };
-
-  proto.___voff = function (type, fn) {
-    var uid = this.uid;
-
-    if (type) {
-      hub.$off(("#" + uid + "@" + type), fn);
-    } else {
-      uid = "#" + uid + "@";
-      var len = uid.length;
-      var types = Object.keys(hub._events);
-      var match = types.filter(function (k) { return k.indexOf(uid) === 0; });
-      match.forEach(function (k) {
-        hub.$off(k, fn);
-      });
-    }
-  };
-};
-
 /*
 object-assign
 (c) Sindre Sorhus
@@ -317,7 +66,7 @@ function shouldUseNative() {
 	}
 }
 
-var index$1 = shouldUseNative() ? Object.assign : function (target, source) {
+var index = shouldUseNative() ? Object.assign : function (target, source) {
 	var arguments$1 = arguments;
 
 	var from;
@@ -345,6 +94,16 @@ var index$1 = shouldUseNative() ? Object.assign : function (target, source) {
 
 	return to;
 };
+
+var commonjsGlobal = typeof window !== 'undefined' ? window : typeof global !== 'undefined' ? global : typeof self !== 'undefined' ? self : {};
+
+
+
+
+
+function createCommonjsModule(fn, module) {
+	return module = { exports: {} }, fn(module, module.exports), module.exports;
+}
 
 var clone_1 = createCommonjsModule(function (module) {
 var clone = (function() {
@@ -612,7 +371,7 @@ function transform$1(data, conf, level, path) {
   if ( level === void 0 ) level = '0';
   if ( path === void 0 ) path = '';
 
-  var newConf = index$1({}, conf, {
+  var newConf = index({}, conf, {
     node: 'name',
     branch: 'dirs',
     leaf: 'files',
@@ -644,12 +403,14 @@ function transform$1(data, conf, level, path) {
     };
   });
 
+  var status = canOpen ? 'filled' : 'empty';
+
   return {
     name: name,
     type: 'branch',
     level: level,
     path: path,
-    node: { name: name, open: open, canOpen: canOpen, checked: checked, level: level, path: path, type: 'node' },
+    node: { name: name, open: open, canOpen: canOpen, checked: checked, level: level, path: path, type: 'node', status: status },
     branches: branches,
     leafs: leafs,
   };
@@ -689,10 +450,10 @@ Store.prototype.findParentBranch = function findParentBranch (levelId) {
   }
     
   var lvs  = levelId.split('.').slice(1, -1);
-  var index= 0;
+  var index$$1= 0;
 
-  while (branch && (index = lvs.shift())) {
-    branch = branch.branches[index];
+  while (branch && (index$$1 = lvs.shift())) {
+    branch = branch.branches[index$$1];
   }
 
   return branch;
@@ -708,11 +469,11 @@ Store.prototype.findCurrentBranch = function findCurrentBranch (levelId) {
     if ( levelId === void 0 ) levelId = '';
 
   var lvs  = levelId.split('.').slice(1);
-  var index= 0;
+  var index$$1= 0;
   var branch = this.dataStore;
 
-  while (branch && (index = lvs.shift())) {
-    branch = branch.branches[index];
+  while (branch && (index$$1 = lvs.shift())) {
+    branch = branch.branches[index$$1];
   }
 
   return branch;
@@ -809,27 +570,28 @@ Store.prototype.merge = function merge (
   var level = node.level;
     var path = node.path;
     var checked = node.checked;
-  var branch = transform$1(data, conf, level, path);
-  var clone= clone_1(this.dataStore);
-
-  var top = clone;
   var lvs = level.split('.').slice(1);
-  var pos = lvs.pop();
-  var index = 0;
-
-  while (index = lvs.shift()) {
-    top = top.branches[index];
-  }
-
-  top.branches[pos] = branch;
+  var branch = transform$1(data, conf, level, path);
   branch.node.open = true;
   branch.node.checked = checked;
 
-  // TODO
-  this.replace(clone);
-  // Object.keys(branch).forEach(key => {
-  // Vue.set(this.dataStore, key, branch[key]);
-  // });
+  if (lvs.length === 0) {
+    this.replace(branch);
+  } else {
+    var clone = clone_1(this.dataStore);
+    var top = clone;
+    var pos = lvs.pop();
+    var index$$1 = 0;
+
+    while (index$$1 = lvs.shift()) {
+      top = top.branches[index$$1];
+    }
+    top.branches.splice(pos, 1, branch);
+    top.node.canOpen = true;
+
+    this.replace(clone);
+  }
+
 
   this.checkBranchDescendents(branch, checked);
 };
@@ -851,7 +613,7 @@ Store.prototype.commit = function commit (action, elem, callback) {
     case 'fold':
       if (isNode) {
         elem.open = !elem.open;
-        callback(elem.canOpen);
+        elem.canOpen || elem.status === 'done' || callback();
       }
       break;
   }
@@ -891,55 +653,349 @@ Store.prototype.getPathResult = function getPathResult (branch) {
   return result;
 };
 
+var VNode = { template: "<li class=\"v-node\" :key=\"data.level\"><i class=\"fa\" :class=\"icon\" @click=\"notify('unfold')\"></i> <span @click=\"notify('change')\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</span></li>",
+  name: 'v-node',
+  props: {
+    data: {
+      type: Object,
+      required: true
+    },
+    uid: {
+      type: [String, Number],
+      required: true
+    }
+  },
+  computed: {
+    icon: function icon() {
+      var data = this.data;
+      var folderLoding = data.status === 'loading';
+      var folderOpen = data.canOpen && data.open;
+      return {
+        'fa-spinner': folderLoding,
+        'fa-folder-open-o': !folderLoding && folderOpen,
+        'fa-folder-o': !folderLoding && !folderOpen
+      };
+    }
+  }
+};
+
+var VLeaf = { template: "<li class=\"v-leaf\" @click=\"notify('change')\" :key=\"data.level\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</li>",
+  name: 'v-leaf',
+  props: {
+    data: {
+      type: Object,
+      required: true
+    },
+    uid: {
+      type: [String, Number],
+      required: true
+    }
+  }
+};
+
+var VBranch = { template: "<li :key=\"node.level\" class=\"v-branch\"><ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul></li>",
+  name: 'v-branch',
+  props: {
+    data: {
+      type: Object,
+      required: true
+    },
+    uid: {
+      type: [String, Number],
+      required: true
+    }
+  },
+  components: {
+    'v-node': VNode,
+    'v-leaf': VLeaf
+  },
+  computed: {
+    branches: function branches() {
+      return this.data.branches;
+    },
+    leafs: function leafs() {
+      return this.data.leafs;
+    },
+    node: function node() {
+      return  this.data.node;
+    }
+  }
+};
+
+var VTree = { template: "<ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul>",
+  name: 'v-tree',
+  props: {
+    store: {
+      type: Object,
+      required: true
+    },
+    uid: {
+      type: [String, Number],
+      required: true
+    }
+  },
+  components: {
+    'v-node': VNode,
+    'v-leaf': VLeaf,
+    'v-branch': VBranch
+  },
+  computed: {
+    root: function root() {
+      return this.store.dataStore;
+    },
+    branches: function branches() {
+      return this.root.branches;
+    },
+    leafs: function leafs() {
+      return this.root.leafs;
+    },
+    node: function node() {
+      return this.root.node;
+    }
+  },
+  created: function created() {
+    var this$1 = this;
+
+    this.listen('unfold', function (node) {
+      this$1.store.commit('fold', node, function () {
+        node.status = 'loading';
+
+        this$1.$emit('request', node, function (data) {
+          node.status = 'done';
+          this$1.store.merge(data, node);
+        });
+        
+      });
+    });
+
+    this.listen('change', function (node) {
+      this$1.store.commit('change', node, function (result) {
+        this$1.$emit('change', result);
+      });
+    });
+  }
+};
+
+var KEY_MAP = {};
+var VFolderComp = { template: "<v-tree :store=\"store\" @change=\"change\" @request=\"request\" :uid=\"uid\"></v-tree>",
+  name: 'v-folder',
+  props: {
+    data: Object,
+    uid: {
+      type: [String, Number],
+      required: true
+    }
+  },
+  components: {
+    'v-tree': VTree
+  },
+  data: function data() {
+    return {
+      store: new Store(this.data)
+    };
+  },
+  methods: {
+    change: function change(result) {
+      this.$emit('change', result);
+    },
+    request: function request(node, done) {
+      this.$emit('request', node, done);
+    }
+  },
+  created: function created() {
+    var uid = this.uid;
+    if (uid in KEY_MAP) {
+      throw 'each <v-folder> instance must get an unique `uid` property';
+    } else {
+      KEY_MAP[uid] = null;
+    }
+  }
+};
+
+var EventMixin = {
+  methods: {
+    notify: function notify(type) {
+      {
+        console.info('[event type]:', type);
+      }
+      this.___vemit(type, this.data);
+    },
+    listen: function listen(type, fn) {
+      this.___von(type, function (e) {
+        fn(e);
+      });
+    }
+  },
+  destroyed: function destroyed() {
+    this.___voff();
+  }
+};
+
+var index$1 = createCommonjsModule(function (module, exports) {
+/* global define */
+(function (root, factory) {
+    /* istanbul ignore next */
+    if (typeof undefined === 'function' && undefined.amd) {
+        undefined([], factory);
+    } else {
+        module.exports = factory();
+    }
+}(commonjsGlobal, function () {
+
+    var semver = /^v?(?:0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(\.(?:[x*]|0|[1-9]\d*)(?:-[\da-z\-]+(?:\.[\da-z\-]+)*)?(?:\+[\da-z\-]+(?:\.[\da-z\-]+)*)?)?)?$/i;
+    var patch = /-([0-9A-Za-z-.]+)/;
+
+    function split(v) {
+        var temp = v.split('.');
+        var arr = temp.splice(0, 2);
+        arr.push(temp.join('.'));
+        return arr;
+    }
+
+    function tryParse(v) {
+        return isNaN(Number(v)) ? v : Number(v);
+    }
+
+    function validate(version) {
+        if (typeof version !== 'string') {
+            throw new TypeError('Invalid argument expected string');
+        }
+        if (!semver.test(version)) {
+            throw new Error('Invalid argument not valid semver');
+        }
+    }
+
+    return function compareVersions(v1, v2) {
+        [v1, v2].forEach(validate);
+
+        var s1 = split(v1);
+        var s2 = split(v2);
+
+        for (var i = 0; i < 3; i++) {
+            var n1 = parseInt(s1[i] || 0, 10);
+            var n2 = parseInt(s2[i] || 0, 10);
+
+            if (n1 > n2) { return 1; }
+            if (n2 > n1) { return -1; }
+        }
+
+        if ([s1[2], s2[2]].every(patch.test.bind(patch))) {
+            var p1 = patch.exec(s1[2])[1].split('.').map(tryParse);
+            var p2 = patch.exec(s2[2])[1].split('.').map(tryParse);
+
+            for (i = 0; i < Math.max(p1.length, p2.length); i++) {
+                if (p1[i] === undefined || typeof p2[i] === 'string' && typeof p1[i] === 'number') { return -1; }
+                if (p2[i] === undefined || typeof p1[i] === 'string' && typeof p2[i] === 'number') { return 1; }
+
+                if (p1[i] > p2[i]) { return 1; }
+                if (p2[i] > p1[i]) { return -1; }
+            }
+        } else if ([s1[2], s2[2]].some(patch.test.bind(patch))) {
+            return patch.test(s1[2]) ? -1 : 1;
+        }
+
+        return 0;
+    };
+
+}));
+});
+
+var checkVersion = function () {
+  var compare = function (v1, v2) {
+    return index$1(v1, v2) >= 0;
+  };
+
+  // if must compile template
+  if (!compare(Vue.version, '2.0.0')) {
+    throw 'This module can only supports vue@2!';
+  }
+};
+
+var eventMix = function () {
+  var hub = new Vue();
+  var proto = Vue.prototype;
+
+  proto.___von = function (type, cb) {
+    var uid = this.uid;
+    var vm = this;
+    var fn = function(e) {
+      if (uid === e.uid && cb) {
+        cb(e.data);
+      }
+    };
+    hub.$on(("#" + uid + "@" + type), fn);
+  };
+
+  proto.___vemit = function (type, data) {
+    var uid = this.uid;
+    hub.$emit(("#" + uid + "@" + type), { data: data, uid: uid });
+  };
+
+  proto.___voff = function (type, fn) {
+    var uid = this.uid;
+
+    if (type) {
+      hub.$off(("#" + uid + "@" + type), fn);
+    } else {
+      uid = "#" + uid + "@";
+      var len = uid.length;
+      var types = Object.keys(hub._events);
+      var match = types.filter(function (k) { return k.indexOf(uid) === 0; });
+      match.forEach(function (k) {
+        hub.$off(k, fn);
+      });
+    }
+  };
+};
+
 VFolderComp.install = function (Vue) {
   checkVersion(Vue);
   eventMix(Vue);
+  Vue.mixin(EventMixin);
   Vue.component(VFolderComp.name, VFolderComp);
 };
 Vue.use(VFolderComp);
 
-var NEW_FOLDER = {
+
+var DATA = {
   name: 'new folder',
   dirs: [{name: 'empty folder'}],
   files: ['1.js', '2.js']
 };
+var EMPTY = {
+  name: 'empty',
+  dirs: [],
+  files: []
+};
 
 new Vue({
   el: '#app',
-  template: '<v-folder :data="data" @change="change" @unfold="unfold"></v-folder>',
-  data: {
-    store: new Store(NEW_FOLDER)
-  },
-  computed: {
-    data: function data() {
-      return this.store.dataStore;
-    }
+  template: "\n    <div>\n      <v-folder\n        :uid=\"uid\"\n        :data=\"data\"\n        :ajax=\"ajax\"\n        @change=\"onChange\"\n        @request=\"onRequest\"\n      ></v-folder>\n    </div>\n  ",
+  data: function data() {
+    return {
+      uid: '23333',
+      data: {
+        name: '根目录',
+        files: ['1.js', '2.js'],
+        dirs: [{name: 'empty folder'}, {name: 'empty folder'}, {name: 'empty folder'}]
+      },
+      ajax: {}
+    };
   },
   methods: {
-    change: function change(elem) {
-      this.store.commit('change', elem, function (result) {
-        console.log(result);
+    onChange: function onChange(result) {
+      console.log(result);
+    },
+    onRequest: function onRequest(node, done) {
+      this.fetch(node).then(function (data) {
+        done(data);
       });
     },
-    unfold: function unfold(elem) {
-      var this$1 = this;
-
-      this.store.commit('fold', elem, function (_) {
-        setTimeout(function () {
-          // TODO
-          // 根节点空
-          // 则不会有任何效果
-          this$1.store.merge(NEW_FOLDER, elem);
-        }, 200);
+    fetch: function fetch(node) {
+      return new Promise(function (res) {
+        setTimeout(function () { return res(Math.random() > .7 ? EMPTY : DATA); }, 5000);
       });
     }
-  },
-  created: function created() {
-    // this.store.merge({
-    //   name: 22,
-    //   files: [1, 2, 4],
-    //   dirs: []
-    // });
   }
 });
 

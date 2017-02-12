@@ -2,7 +2,7 @@
   <li class="v-node" :key="data.level">
     <i
       class="fa"
-      :class="[ data.canOpen && data.open ? 'fa-folder-open-o' : 'fa-folder-o' ]"
+      :class="icon"
       @click="notify('unfold')"
     ></i>
     <span @click="notify('change')">
@@ -13,19 +13,29 @@
 </template>
 
 <script>
-  import eHubMixin from './mixin';
-
   export default {
+    name: 'v-node',
     props: {
       data: {
         type: Object,
-        require: true
+        required: true
       },
       uid: {
-        type: [Number, String],
-        require: true
+        type: [String, Number],
+        required: true
       }
     },
-    mixins: [eHubMixin]
+    computed: {
+      icon() {
+        let data = this.data;
+        let folderLoding = data.status === 'loading';
+        let folderOpen = data.canOpen && data.open;
+        return {
+          'fa-spinner': folderLoding,
+          'fa-folder-open-o': !folderLoding && folderOpen,
+          'fa-folder-o': !folderLoding && !folderOpen
+        };
+      }
+    }
   };
 </script>

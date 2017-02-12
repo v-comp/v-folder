@@ -8,6 +8,7 @@ import objectAssign from 'object-assign';
  * @param level  identifier inferring depth
  */
 export default transform;
+
 function transform(data = {}, conf = {}, level = '0', path = '') {
   let newConf = objectAssign({}, conf, {
     node: 'name',
@@ -37,12 +38,14 @@ function transform(data = {}, conf = {}, level = '0', path = '') {
     };
   });
 
+  let status = canOpen ? 'filled' : 'empty';
+
   return {
     name,
     type: 'branch',
     level,
     path,
-    node: { name, open, canOpen, checked, level, path, type: 'node' },
+    node: { name, open, canOpen, checked, level, path, type: 'node', status },
     branches,
     leafs,
   };

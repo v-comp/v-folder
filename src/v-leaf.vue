@@ -6,19 +6,17 @@
 </template>
 
 <script>
-  import eHubMixin from './mixin';
-
   export default {
+    name: 'v-leaf',
     props: {
       data: {
         type: Object,
-        require: true
+        required: true
       },
       uid: {
-        type: [Number, String],
-        require: true
+        type: [String, Number],
+        required: true
       }
-    },
-    mixins: [eHubMixin]
+    }
   };
 </script>
