@@ -6,7 +6,7 @@
 </template>
 
 <script>
-  import notifyMixin from './event.mixin.js';
+  import notifyMixin from './mixin.js';
 
   export default {
     props: {
