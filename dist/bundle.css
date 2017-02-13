@@ -59,3 +59,10 @@
 .v-leaf .fa:hover {
   color: #0c71c5;
 }
+
+.cursor-no-ops {
+  cursor: not-allowed;
+}
+.cursor-progress {
+  cursor: progress;
+}

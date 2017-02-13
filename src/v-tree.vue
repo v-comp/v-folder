@@ -46,9 +46,7 @@
       this.listen('unfold', node => {
         this.store.commit('fold', node, () => {
           node.status = 'loading';
-
           this.$emit('request', node, data => {
-            node.status = 'done';
             this.store.merge(data, node);
           });
           
@@ -125,6 +123,13 @@
   }
   .v-leaf .fa:hover {
     color: #0c71c5;
+  }
+
+  .cursor-no-ops {
+    cursor: not-allowed;
+  }
+  .cursor-progress {
+    cursor: progress;
   }
 </style>
 

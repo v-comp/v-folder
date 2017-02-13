@@ -9,7 +9,7 @@ import objectAssign from 'object-assign';
  */
 export default transform;
 
-function transform(data = {}, conf = {}, level = '0', path = '') {
+function transform(data = {}, conf = {}, level = '0', path) {
   let newConf = objectAssign({}, conf, {
     node: 'name',
     branch: 'dirs',
@@ -23,7 +23,8 @@ function transform(data = {}, conf = {}, level = '0', path = '') {
   let branches = data[branch] || [];
   let leafs   = data[leaf] || [];
   let canOpen  = branches.length > 0 || leafs.length > 0;
-
+  
+  path = path || `/${name}`;
   branches = branches.map((branch, i) => {
     return transform(branch, newConf, `${level}.${i}`, `${path}/${branch.name}`);
   });

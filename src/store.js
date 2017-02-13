@@ -148,8 +148,10 @@ export default class Store {
     let { level, path, checked } = node;
     let lvs = level.split('.').slice(1);
     let branch = transform(data, conf, level, path);
+    
     branch.node.open = true;
     branch.node.checked = checked;
+    branch.node.status = 'done';
 
     if (lvs.length === 0) {
       this.replace(branch);

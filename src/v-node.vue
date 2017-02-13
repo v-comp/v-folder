@@ -30,10 +30,12 @@
         let data = this.data;
         let folderLoding = data.status === 'loading';
         let folderOpen = data.canOpen && data.open;
+        let isEmpty = !data.canOpen && data.status === 'done';
         return {
-          'fa-spinner': folderLoding,
+          'fa-spinner cursor-progress': folderLoding,
           'fa-folder-open-o': !folderLoding && folderOpen,
-          'fa-folder-o': !folderLoding && !folderOpen
+          'fa-folder-o': !folderLoding && !folderOpen,
+          'cursor-no-ops': isEmpty
         };
       }
     }

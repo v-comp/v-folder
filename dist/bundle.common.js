@@ -369,7 +369,6 @@ function transform$1(data, conf, level, path) {
   if ( data === void 0 ) data = {};
   if ( conf === void 0 ) conf = {};
   if ( level === void 0 ) level = '0';
-  if ( path === void 0 ) path = '';
 
   var newConf = index({}, conf, {
     node: 'name',
@@ -388,7 +387,8 @@ function transform$1(data, conf, level, path) {
   var branches = data[branch] || [];
   var leafs   = data[leaf] || [];
   var canOpen  = branches.length > 0 || leafs.length > 0;
-
+  
+  path = path || ("/" + name);
   branches = branches.map(function (branch, i) {
     return transform$1(branch, newConf, (level + "." + i), (path + "/" + (branch.name)));
   });
@@ -572,8 +572,10 @@ Store.prototype.merge = function merge (
     var checked = node.checked;
   var lvs = level.split('.').slice(1);
   var branch = transform$1(data, conf, level, path);
+    
   branch.node.open = true;
   branch.node.checked = checked;
+  branch.node.status = 'done';
 
   if (lvs.length === 0) {
     this.replace(branch);
@@ -670,10 +672,12 @@ var VNode = { template: "<li class=\"v-node\" :key=\"data.level\"><i class=\"fa\
       var data = this.data;
       var folderLoding = data.status === 'loading';
       var folderOpen = data.canOpen && data.open;
+      var isEmpty = !data.canOpen && data.status === 'done';
       return {
-        'fa-spinner': folderLoding,
+        'fa-spinner cursor-progress': folderLoding,
         'fa-folder-open-o': !folderLoding && folderOpen,
-        'fa-folder-o': !folderLoding && !folderOpen
+        'fa-folder-o': !folderLoding && !folderOpen,
+        'cursor-no-ops': isEmpty
       };
     }
   }
@@ -759,9 +763,7 @@ var VTree = { template: "<ul class=\"v-branch-body\"><v-node :data=\"node\" :uid
     this.listen('unfold', function (node) {
       this$1.store.commit('fold', node, function () {
         node.status = 'loading';
-
         this$1.$emit('request', node, function (data) {
-          node.status = 'done';
           this$1.store.merge(data, node);
         });
         
