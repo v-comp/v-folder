@@ -7,12 +7,14 @@
 </template>
 
 <script>
+  import EventMixin from './mixin';
   import VNode from './v-node.vue';
   import VLeaf from './v-leaf.vue';
   import VBranch from './v-branch.vue';
 
   export default {
     name: 'v-tree',
+    mixins: [EventMixin],
     props: {
       store: {
         type: Object,
@@ -41,23 +43,6 @@
       node() {
         return this.root.node;
       }
-    },
-    created() {
-      this.listen('unfold', node => {
-        this.store.commit('fold', node, () => {
-          node.status = 'loading';
-          this.$emit('request', node, data => {
-            this.store.merge(data, node);
-          });
-          
-        })
-      });
-
-      this.listen('change', node => {
-        this.store.commit('change', node, result => {
-          this.$emit('change', result);
-        });
-      });
     }
   };
 </script>

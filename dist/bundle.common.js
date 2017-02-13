@@ -4,6 +4,25 @@
 	(factory());
 }(this, (function () { 'use strict';
 
+var EventMixin = {
+  methods: {
+    notify: function notify(type) {
+      {
+        console.info('[event type]:', type);
+      }
+      this.___vemit(type, this.data);
+    },
+    listen: function listen(type, fn) {
+      this.___von(type, function (e) {
+        fn(e);
+      });
+    }
+  },
+  destroyed: function destroyed() {
+    this.___voff();
+  }
+};
+
 /*
 object-assign
 (c) Sindre Sorhus
@@ -365,32 +384,23 @@ if ('object' === 'object' && module.exports) {
 }
 });
 
-function transform$1(data, conf, level, path) {
+function transform$1(data, config, level, path) {
   if ( data === void 0 ) data = {};
-  if ( conf === void 0 ) conf = {};
-  if ( level === void 0 ) level = '0';
 
-  var newConf = index({}, conf, {
-    node: 'name',
-    branch: 'dirs',
-    leaf: 'files',
-    open: false,
-    checked: false
-  });
-  
-  var node = newConf.node;
-  var branch = newConf.branch;
-  var leaf = newConf.leaf;
-  var checked = newConf.checked;
-  var open = newConf.open;
+  var node = config.node;
+  var branch = config.branch;
+  var leaf = config.leaf;
+  var checked = config.checked;
+  var open = config.open;
   var name = data[node] || '/';
   var branches = data[branch] || [];
   var leafs   = data[leaf] || [];
   var canOpen  = branches.length > 0 || leafs.length > 0;
-  
+
   path = path || ("/" + name);
+  
   branches = branches.map(function (branch, i) {
-    return transform$1(branch, newConf, (level + "." + i), (path + "/" + (branch.name)));
+    return transform$1(branch, config, (level + "." + i), (path + "/" + (branch.name)));
   });
   
   leafs = leafs.map(function (leaf, i) {
@@ -416,11 +426,34 @@ function transform$1(data, conf, level, path) {
   };
 }
 
+// function raw(tree, conf) {
+//   conf = objectAssign({}, conf, defaultConf);
+//   let { node, branch, leaf } = conf;
+//   let ret = {};
+//   ret[node] = tree.name;
+//   ret[branch] = tree.branches.map(b => raw(b, conf));
+//   ret[leaf] = tree.leafs.map(l => l.name);
+//   return ret;
+// }
+
+// transform.raw = raw;
+
 var arrPush = [].push;
 var noop = function (_) { return _; };
+var defaultConf = {
+  node: 'name',
+  branch: 'dirs',
+  leaf: 'files',
+  open: false,
+  checked: false
+};
 
 var Store = function Store(data, conf) {
-  this.dataStore = transform$1(data, conf);
+  var path = data.path || data.name;
+  var name = path.split('/').filter(function (s) { return !!s; }).slice(-1)[0] || data.name;
+  data.name = name;
+  this.conf = index({}, conf, defaultConf);
+  this.dataStore = transform$1(data, this.conf, '0', path);
 };
 
 /**
@@ -558,8 +591,7 @@ Store.prototype.checkLeaf = function checkLeaf (leaf) {
   */
 Store.prototype.merge = function merge (
   data,
-  node,
-  conf
+  node
 ) {
     if ( data === void 0 ) data = {};
     if ( node === void 0 ) node = {
@@ -571,8 +603,8 @@ Store.prototype.merge = function merge (
     var path = node.path;
     var checked = node.checked;
   var lvs = level.split('.').slice(1);
-  var branch = transform$1(data, conf, level, path);
-    
+  var branch = transform$1(data, this.conf, level, path);
+
   branch.node.open = true;
   branch.node.checked = checked;
   branch.node.status = 'done';
@@ -655,8 +687,13 @@ Store.prototype.getPathResult = function getPathResult (branch) {
   return result;
 };
 
+Store.prototype.raw = function raw () {
+  return transform$1.raw(this.dataStore, this.conf);
+};
+
 var VNode = { template: "<li class=\"v-node\" :key=\"data.level\"><i class=\"fa\" :class=\"icon\" @click=\"notify('unfold')\"></i> <span @click=\"notify('change')\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</span></li>",
   name: 'v-node',
+  mixins: [EventMixin],
   props: {
     data: {
       type: Object,
@@ -685,6 +722,7 @@ var VNode = { template: "<li class=\"v-node\" :key=\"data.level\"><i class=\"fa\
 
 var VLeaf = { template: "<li class=\"v-leaf\" @click=\"notify('change')\" :key=\"data.level\"><i class=\"fa\" :class=\"[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]\"></i> {{data.name}}</li>",
   name: 'v-leaf',
+  mixins: [EventMixin],
   props: {
     data: {
       type: Object,
@@ -699,6 +737,7 @@ var VLeaf = { template: "<li class=\"v-leaf\" @click=\"notify('change')\" :key=\
 
 var VBranch = { template: "<li :key=\"node.level\" class=\"v-branch\"><ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul></li>",
   name: 'v-branch',
+  mixins: [EventMixin],
   props: {
     data: {
       type: Object,
@@ -728,6 +767,7 @@ var VBranch = { template: "<li :key=\"node.level\" class=\"v-branch\"><ul class=
 
 var VTree = { template: "<ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul>",
   name: 'v-tree',
+  mixins: [EventMixin],
   props: {
     store: {
       type: Object,
@@ -756,80 +796,84 @@ var VTree = { template: "<ul class=\"v-branch-body\"><v-node :data=\"node\" :uid
     node: function node() {
       return this.root.node;
     }
-  },
-  created: function created() {
-    var this$1 = this;
-
-    this.listen('unfold', function (node) {
-      this$1.store.commit('fold', node, function () {
-        node.status = 'loading';
-        this$1.$emit('request', node, function (data) {
-          this$1.store.merge(data, node);
-        });
-        
-      });
-    });
-
-    this.listen('change', function (node) {
-      this$1.store.commit('change', node, function (result) {
-        this$1.$emit('change', result);
-      });
-    });
   }
 };
 
 var KEY_MAP = {};
-var VFolderComp = { template: "<v-tree :store=\"store\" @change=\"change\" @request=\"request\" :uid=\"uid\"></v-tree>",
+var VFolderComp = { template: "<v-tree :store=\"store\" :uid=\"uid\"></v-tree>",
   name: 'v-folder',
+  mixins: [EventMixin],
   props: {
     data: Object,
     uid: {
       type: [String, Number],
       required: true
-    }
+    },
+    ajax: Object
   },
   components: {
     'v-tree': VTree
   },
   data: function data() {
     return {
-      store: new Store(this.data)
+      store: new Store(this.data, this.conf)
     };
   },
   methods: {
-    change: function change(result) {
-      this.$emit('change', result);
-    },
     request: function request(node, done) {
-      this.$emit('request', node, done);
+      if (!this.ajax) {
+        return done('ajax:false');
+      }
+
+      var reqConf = this.ajax;
+      var url = reqConf.url;
+      var data = reqConf.data;
+      var params = reqConf.params;
+      var pathAs = reqConf.pathAs;
+      reqConf.params = (params || {});
+      reqConf.data   = (data || {});
+
+      reqConf.params[pathAs] = node.path;
+      reqConf.data[pathAs]   = node.path;
+
+      axios.get(url, reqConf).then(function (r) {
+        var data = r.data;
+        data.dirs = data.dirs.map(function (d) { return ({name: d}); });
+        done(null, data);
+      })
+      .catch(function (e) {
+        done(e);
+      });
     }
   },
   created: function created() {
+    var this$1 = this;
+
     var uid = this.uid;
     if (uid in KEY_MAP) {
       throw 'each <v-folder> instance must get an unique `uid` property';
     } else {
       KEY_MAP[uid] = null;
     }
-  }
-};
 
-var EventMixin = {
-  methods: {
-    notify: function notify(type) {
-      {
-        console.info('[event type]:', type);
-      }
-      this.___vemit(type, this.data);
-    },
-    listen: function listen(type, fn) {
-      this.___von(type, function (e) {
-        fn(e);
+    this.listen('change', function (node) {
+      this$1.store.commit('change', node, function (result) {
+        this$1.$emit('change', result);
       });
-    }
-  },
-  destroyed: function destroyed() {
-    this.___voff();
+    });
+
+    this.listen('unfold', function (node) {
+      this$1.store.commit('fold', node, function () {
+        node.status = 'loading';
+        this$1.request(node, function (err, data) {
+          if (err) {
+            node.status = 'empty';
+          } else {
+            this$1.store.merge(data, node);
+          }
+        });
+      });
+    });
   }
 };
 
@@ -953,50 +997,41 @@ var eventMix = function () {
 VFolderComp.install = function (Vue) {
   checkVersion(Vue);
   eventMix(Vue);
-  Vue.mixin(EventMixin);
   Vue.component(VFolderComp.name, VFolderComp);
 };
 Vue.use(VFolderComp);
 
 
-var DATA = {
-  name: 'new folder',
-  dirs: [{name: 'empty folder'}],
-  files: ['1.js', '2.js']
-};
-var EMPTY = {
-  name: 'empty',
-  dirs: [],
-  files: []
-};
-
 new Vue({
   el: '#app',
-  template: "\n    <div>\n      <v-folder\n        :uid=\"uid\"\n        :data=\"data\"\n        :ajax=\"ajax\"\n        @change=\"onChange\"\n        @request=\"onRequest\"\n      ></v-folder>\n    </div>\n  ",
+  template: "\n    <div>\n      <v-folder\n        :uid=\"uid\"\n        :data=\"data\"\n        :ajax=\"ajax\"\n        :conf=\"conf\"\n        @change=\"onChange\"\n      ></v-folder>\n    </div>\n  ",
   data: function data() {
     return {
-      uid: '23333',
-      data: {
-        name: '根目录',
-        files: ['1.js', '2.js'],
-        dirs: [{name: 'empty folder'}, {name: 'empty folder'}, {name: 'empty folder'}]
+      uid: 0,
+      conf: {
+        node: 'name',
+        branch: 'dirs',
+        leaf: 'files',
+        open: false,
+        checked: false
       },
-      ajax: {}
+      data: {
+        name: '/Users/',
+        files: [],
+        dirs: []
+      },
+      ajax: {
+        url: 'http://localhost:1234',
+        params: {},
+        method: 'GET',
+        headers: {},
+        pathAs: 'path'
+      }
     };
   },
   methods: {
     onChange: function onChange(result) {
       console.log(result);
-    },
-    onRequest: function onRequest(node, done) {
-      this.fetch(node).then(function (data) {
-        done(data);
-      });
-    },
-    fetch: function fetch(node) {
-      return new Promise(function (res) {
-        setTimeout(function () { return res(Math.random() > .7 ? EMPTY : DATA); }, 5000);
-      });
     }
   }
 });

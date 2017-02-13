@@ -9,11 +9,13 @@
 </template>
 
 <script>
+  import EventMixin from './mixin';
   import VLeaf from './v-leaf.vue';
   import VNode from './v-node.vue';
 
   export default {
     name: 'v-branch',
+    mixins: [EventMixin],
     props: {
       data: {
         type: Object,

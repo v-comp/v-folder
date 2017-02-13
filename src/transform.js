@@ -9,24 +9,17 @@ import objectAssign from 'object-assign';
  */
 export default transform;
 
-function transform(data = {}, conf = {}, level = '0', path) {
-  let newConf = objectAssign({}, conf, {
-    node: 'name',
-    branch: 'dirs',
-    leaf: 'files',
-    open: false,
-    checked: false
-  });
-  
-  let { node, branch, leaf, checked, open } = newConf;
+function transform(data = {}, config, level, path) {
+  let { node, branch, leaf, checked, open } = config;
   let name = data[node] || '/';
   let branches = data[branch] || [];
   let leafs   = data[leaf] || [];
   let canOpen  = branches.length > 0 || leafs.length > 0;
-  
+
   path = path || `/${name}`;
+  
   branches = branches.map((branch, i) => {
-    return transform(branch, newConf, `${level}.${i}`, `${path}/${branch.name}`);
+    return transform(branch, config, `${level}.${i}`, `${path}/${branch.name}`);
   });
   
   leafs = leafs.map((leaf, i) => {
@@ -51,3 +44,15 @@ function transform(data = {}, conf = {}, level = '0', path) {
     leafs,
   };
 };
+
+// function raw(tree, conf) {
+//   conf = objectAssign({}, conf, defaultConf);
+//   let { node, branch, leaf } = conf;
+//   let ret = {};
+//   ret[node] = tree.name;
+//   ret[branch] = tree.branches.map(b => raw(b, conf));
+//   ret[leaf] = tree.leafs.map(l => l.name);
+//   return ret;
+// }
+
+// transform.raw = raw;

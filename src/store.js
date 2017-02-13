@@ -4,10 +4,21 @@ import transform from '../src/transform';
 
 const arrPush = [].push;
 const noop = _ => _;
+const defaultConf = {
+  node: 'name',
+  branch: 'dirs',
+  leaf: 'files',
+  open: false,
+  checked: false
+};
 
 export default class Store {
   constructor(data, conf) {
-    this.dataStore = transform(data, conf);
+    let path = data.path || data.name;
+    let name = path.split('/').filter(s => !!s).slice(-1)[0] || data.name;
+    data.name = name;
+    this.conf = objectAssign({}, conf, defaultConf);
+    this.dataStore = transform(data, this.conf, '0', path);
   }
 
   /**
@@ -142,13 +153,12 @@ export default class Store {
     node = {
       level: '0',
       path: ''
-    },
-    conf
+    }
   ) {
     let { level, path, checked } = node;
     let lvs = level.split('.').slice(1);
-    let branch = transform(data, conf, level, path);
-    
+    let branch = transform(data, this.conf, level, path);
+
     branch.node.open = true;
     branch.node.checked = checked;
     branch.node.status = 'done';
@@ -219,5 +229,9 @@ export default class Store {
     }
 
     return result;
+  }
+
+  raw() {
+    return transform.raw(this.dataStore, this.conf);
   }
 };

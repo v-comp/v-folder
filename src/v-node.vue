@@ -13,8 +13,10 @@
 </template>
 
 <script>
+  import EventMixin from './mixin';
   export default {
     name: 'v-node',
+    mixins: [EventMixin],
     props: {
       data: {
         type: Object,

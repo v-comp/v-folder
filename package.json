@@ -8,11 +8,12 @@
     "bundle": "rollup -c rollup.config.js",
     "watch": "cross-env MODE=common ENV=prod rollup  -c rollup.config.js -w",
     "serv": "serv",
+    "mock": "node ./server/index.js",
     "build:compile": "cross-env MODE=common npm run bundle",
     "build:common": "cross-env MODE=compile npm run bundle",
     "build": "run-s clean build:compile build:common",
     "pre": "run-s build serv",
-    "start": "npm run clean && run-p watch serv"
+    "start": "npm run clean && run-p mock watch serv"
   },
   "repository": {
     "type": "git",
