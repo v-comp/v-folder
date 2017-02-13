@@ -16,7 +16,8 @@
         type: [String, Number],
         required: true
       },
-      ajax: Object
+      ajax: Object,
+      conf: Object
     },
     components: {
       'v-tree': VTree
@@ -31,18 +32,27 @@
         if (!this.ajax) {
           return done('ajax:false');
         }
+        
+        let conf = this.conf || {};
+        let dirKey  = conf['branch'] || 'dirs';
+        let fileKey = conf['leaf'] || 'files';
+        let nameKey = conf['node'] || 'name';
   
         let reqConf = this.ajax;
-        let { url, data, params, pathAs } = reqConf;
-        reqConf.params = (params || {});
-        reqConf.data   = (data || {});
+        let { url, method, data, params, pathAs } = reqConf;
+        let isGET = method.toUpperCase() === 'GET';
+        
+        if (isGET) {
+          reqConf.params = (params || {});
+          reqConf.params[pathAs] = node.path;
+        } else {
+          reqConf.data = (data || {});
+          reqConf.data[pathAs] = node.path;
+        }
 
-        reqConf.params[pathAs] = node.path;
-        reqConf.data[pathAs]   = node.path;
-  
-        this.$http.get(url, reqConf).then(r => {
-          let data = r.data;
-          data.dirs = data.dirs.map(d => ({name: d}));
+        this.$http(reqConf).then(res => {
+          let data = res.data;
+          data[dirKey] = data[dirKey].map(d => ({[nameKey]: d}));
           done(null, data);
         })
         .catch(e => {
