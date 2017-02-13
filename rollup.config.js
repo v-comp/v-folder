@@ -13,7 +13,7 @@ export default {
   format: 'umd',
   sourceMap: true,
   useStrict: true,
-  moduleName: 'vFolder',
+  moduleName: 'VFolder',
   plugins: [
     replace({
       'process.env.MODE': JSON.stringify(MODE),
@@ -32,6 +32,6 @@ export default {
     buble({
       objectAssign: 'Object.assign'
     }),
-    // uglify()
+    uglify()
   ]
 };

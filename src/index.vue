@@ -40,7 +40,7 @@
         reqConf.params[pathAs] = node.path;
         reqConf.data[pathAs]   = node.path;
   
-        axios.get(url, reqConf).then(r => {
+        this.$http.get(url, reqConf).then(r => {
           let data = r.data;
           data.dirs = data.dirs.map(d => ({name: d}));
           done(null, data);

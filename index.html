@@ -11,7 +11,55 @@
   <div id="app"></div>
   <div id="app2"></div>
   <script src="//lib.baomitu.com/vue/2.0.5/vue.js"></script>
-  <script src="//lib.baomitu.com/axios/0.15.3/axios.min.js"></script>
+  <script src="//lib.baomitu.com/vue-resource/1.2.0/vue-resource.min.js"></script>
   <script src="./dist/bundle.common.js"></script>
+  <script>
+  Vue.use(VFolder);
+  
+  new Vue({
+    el: '#app',
+    template: `
+      <div>
+        <v-folder
+          :uid="uid"
+          :data="data"
+          :ajax="ajax"
+          :conf="conf"
+          @change="onChange"
+        ></v-folder>
+      </div>
+    `,
+    data() {
+      return {
+        uid: 0,
+        conf: {
+          node: 'name',
+          branch: 'dirs',
+          leaf: 'files',
+          open: false,
+          checked: false
+        },
+        data: {
+          name: '/Users/',
+          files: [],
+          dirs: []
+        },
+        ajax: {
+          url: 'http://localhost:1234',
+          params: {},
+          method: 'GET',
+          headers: {},
+          pathAs: 'path'
+        }
+      };
+    },
+    methods: {
+      onChange(result) {
+        console.log(result);
+      }
+    }
+  });
+
+  </script>
 </body>
 </html>
