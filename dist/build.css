@@ -15,23 +15,6 @@
   position: relative;
   padding-left: 27px;
 }
-/*.v-branch:before,
-.v-branch:after,
-.v-leaf:before,
-.v-leaf:after {
-  content: '';
-  position: absolute;
-  left: 0;
-  width: 25px;
-  height: 50%;
-  border-left: 1px solid;
-  border-bottom: 1px solid;
-}
-.v-branch:after, 
-.v-leaf:after {
-  border-bottom: 0;
-  bottom: 0;
-}*/
 .v-branch ul {
   margin: 0;
   padding: 0;
@@ -42,35 +25,28 @@
                           .v-node
 ---------------------------------------------------------------*/
 .v-node {
-  position: relative;
   padding: 0 0 0  27px;
+  height: 22px;
+  line-height: 22px;
   list-style: none;
+  overflow: hidden;
+  cursor: pointer;
 }
 .v-node .fa {
   width: 20px;
   color: #0d83e6;
   text-align: center;
-  cursor: pointer;
+  vertical-align: middle;
 }
 .v-node .fa:hover {
   color: #0c71c5;
-}
-
-.v-node > .fa {
-  position: absolute;
-  left: 0;
-  top: 1px;
-}
-.v-node > .span {
-  cursor: pointer;
 }
 
 /*----------------------------------------------------------------
                           .v-leaf
 ---------------------------------------------------------------*/
 .v-leaf {
-  position: relative;
-  margin: 0;
+  margin: 0 0 0 27px;
   padding: 0 0 0 27px;
   cursor: pointer;
 }
@@ -79,11 +55,7 @@
   width: 20px;
   color: #0d83e6;
   text-align: center;
-  font: normal normal normal 14px/1 FontAwesome;
-  font-size: inherit;
-  text-rendering: auto;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale
+  vertical-align: middle;
 }
 .v-leaf .fa:hover {
   color: #0c71c5;
