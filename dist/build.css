@@ -26,27 +26,31 @@
 ---------------------------------------------------------------*/
 .v-node {
   padding: 0 0 0  27px;
-  height: 22px;
-  line-height: 22px;
   list-style: none;
   overflow: hidden;
-  cursor: pointer;
 }
 .v-node .fa {
   width: 20px;
   color: #0d83e6;
   text-align: center;
-  vertical-align: middle;
+  cursor: pointer;
 }
 .v-node .fa:hover {
   color: #0c71c5;
+}
+
+.v-node > .fa {
+  
+}
+.v-node > .span {
+  cursor: pointer;
 }
 
 /*----------------------------------------------------------------
                           .v-leaf
 ---------------------------------------------------------------*/
 .v-leaf {
-  margin: 0 0 0 27px;
+  margin: 0;
   padding: 0 0 0 27px;
   cursor: pointer;
 }
@@ -55,7 +59,6 @@
   width: 20px;
   color: #0d83e6;
   text-align: center;
-  vertical-align: middle;
 }
 .v-leaf .fa:hover {
   color: #0c71c5;
