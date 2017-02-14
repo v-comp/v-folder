@@ -61,7 +61,7 @@
         let nameKey = conf['node'] || 'name';
   
         let reqConf = this.ajax;
-        let { url, method, data, params, pathAs } = reqConf;
+        let { url, method, data, params, pathAs, headers } = reqConf;
         let isGET = method.toUpperCase() === 'GET';
         
         if (isGET) {
@@ -72,14 +72,16 @@
           reqConf.data[pathAs] = node.path;
         }
 
-        this.$http(reqConf).then(res => {
-          let data = res.data;
-          data[dirKey] = data[dirKey].map(d => ({[nameKey]: d}));
-          done(null, data);
-        })
-        .catch(e => {
-          done(e);
-        });
+        reqConf.headers = headers || {};
+
+        this.$http(reqConf)
+          .then(r => r.data)
+          .then(data => {
+            data[nameKey] = node.name;
+            data[dirKey]  = data[dirKey].map(d => ({[nameKey]: d}));
+            done(null, data);
+          })
+          .catch(e => done(e));
       }
     },
     created() {
@@ -126,7 +128,6 @@
     user-select: none;
   }
   .v-branch-body .v-branch {
-    position: relative;
     padding-left: 27px;
   }
   .v-branch ul {
@@ -142,31 +143,26 @@
     padding: 0 0 0  27px;
     list-style: none;
     overflow: hidden;
+    cursor: pointer;
+    vertical-align: middle;
   }
   .v-node .fa {
     width: 20px;
     color: #0d83e6;
     text-align: center;
-    cursor: pointer;
   }
   .v-node .fa:hover {
     color: #0c71c5;
-  }
-
-  .v-node > .fa {
-    
-  }
-  .v-node > .span {
-    cursor: pointer;
   }
 
   /*----------------------------------------------------------------
                             .v-leaf
   ---------------------------------------------------------------*/
   .v-leaf {
-    margin: 0;
+    margin: 0 0 0 27px;
     padding: 0 0 0 27px;
     cursor: pointer;
+    vertical-align: middle;
   }
   .v-leaf .fa {
     display: inline-block;

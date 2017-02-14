@@ -39,14 +39,15 @@
           checked: false
         },
         data: {
-          name: '/Users/',
+          name: '/Users',
           files: [],
           dirs: []
         },
         ajax: {
+          method: 'GET',
           url: 'http://localhost:1234',
           params: {},
-          method: 'GET',
+          data: {},
           headers: {},
           pathAs: 'path'
         }

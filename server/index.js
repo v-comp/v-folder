@@ -16,7 +16,7 @@ http.createServer(function (req, res) {
   let dir = qs.parse(query).path;
   let basename = path.basename(dir);
   let ret = {
-    name: basename,
+    sourceDir: dir,
     dirs: [],
     files:[]
   };
