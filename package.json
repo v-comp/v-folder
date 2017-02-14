@@ -1,6 +1,6 @@
 {
   "name": "v-folder",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "vue tree select component",
   "main": "dist/build.js",
   "scripts": {
