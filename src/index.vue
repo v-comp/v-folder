@@ -91,14 +91,13 @@
       }
 
       this.listen('change', node => {
-        this.store.commit('change', node, result => {
-          this.$emit('change', result);
-        });
+        this.store.commit('change', node, (res) => this.$emit('change', res));
       });
 
       this.listen('unfold', node => {
         this.store.commit('fold', node, () => {
           node.status = 'loading';
+  
           this.request(node, (err, data) => {
             if (err) {
               node.status = 'empty';
@@ -112,7 +111,7 @@
   };
 </script>
 
-<style>
+<style scoped>
   /*----------------------------------------------------------------
                             .v-branch
   ---------------------------------------------------------------*/
@@ -157,17 +156,27 @@
                             .v-node
   ---------------------------------------------------------------*/
   .v-node {
-    padding: 0;
-    cursor: pointer;
+    position: relative;
+    padding: 0 0 0  27px;
     list-style: none;
   }
   .v-node .fa {
     width: 20px;
     color: #0d83e6;
     text-align: center;
+    cursor: pointer;
   }
   .v-node .fa:hover {
     color: #0c71c5;
+  }
+
+  .v-node > .fa {
+    position: absolute;
+    left: 0;
+    top: 1px;
+  }
+  .v-node > .span {
+    cursor: pointer;
   }
 
   /*----------------------------------------------------------------

@@ -2,11 +2,11 @@
   <li class="v-node" :key="data.level">
     <i
       class="fa"
-      :class="icon"
+      :class="folderClass"
       @click="notify('unfold')"
     ></i>
     <span @click="notify('change')">
-      <i class="fa" :class="[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]"></i>
+      <i class="fa" :class="checkboxClass"></i>
       {{data.name}}
     </span>
   </li>
@@ -14,6 +14,13 @@
 
 <script>
   import EventMixin from './mixin';
+
+  const classNames = [
+    'fa-square-o',
+    'fa-minus-square-o',
+    'fa-check-square-o',
+  ];
+
   export default {
     name: 'v-node',
     mixins: [EventMixin],
@@ -28,7 +35,7 @@
       }
     },
     computed: {
-      icon() {
+      folderClass() {
         let data = this.data;
         let folderLoding = data.status === 'loading';
         let folderOpen = data.canOpen && data.open;
@@ -39,6 +46,9 @@
           'fa-folder-o': !folderLoding && !folderOpen,
           'cursor-no-ops': isEmpty
         };
+      },
+      checkboxClass() {
+        return classNames[this.data.check + 1];
       }
     }
   };

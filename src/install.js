@@ -1,26 +1,4 @@
-import compareVersion from 'compare-versions';
-
-export const checkVersion = function () {
-  let compare = function (v1, v2) {
-    return compareVersion(v1, v2) >= 0;
-  };
-
-  // if must compile template
-  if (process.env.MODE === 'compile') {
-    // `compileTemplate: true` will error
-    // before version 2.1.5
-    if (!compare(Vue.version, '2.1.5')) {
-      throw 'Vue before verison 2.1.5 will cause error.\n Pleasw consider updating vue, or just require `bundle.common.js` instead of `bundle.compile.js`';
-    }
-  }
-
-  // warn that will not support vue@1
-  if (!compare(Vue.version, '2.0.0')) {
-    throw 'This module can only supports vue@2!';
-  }
-};
-
-export const eventMix = function () {
+export const eventMix = function (Vue) {
   let hub = new Vue();
   let proto = Vue.prototype;
 

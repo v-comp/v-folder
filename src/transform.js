@@ -10,7 +10,7 @@ import objectAssign from 'object-assign';
 export default transform;
 
 function transform(data = {}, config, level, path) {
-  let { node, branch, leaf, checked, open } = config;
+  let { node, branch, leaf, check, open } = config;
   let name = data[node] || '/';
   let branches = data[branch] || [];
   let leafs   = data[leaf] || [];
@@ -26,7 +26,7 @@ function transform(data = {}, config, level, path) {
     return {
       name: leaf,
       type: 'leaf',
-      checked,
+      check,
       level: `${level}.${i}`,
       path: `${path}/${leaf}`
     };
@@ -39,7 +39,7 @@ function transform(data = {}, config, level, path) {
     type: 'branch',
     level,
     path,
-    node: { name, open, canOpen, checked, level, path, type: 'node', status },
+    node: { name, open, canOpen, check, level, path, type: 'node', status },
     branches,
     leafs,
   };

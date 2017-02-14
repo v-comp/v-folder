@@ -2,18 +2,14 @@
   "name": "v-folder",
   "version": "1.0.1",
   "description": "vue tree select component",
-  "main": "index.js",
+  "main": "dist/build.js",
   "scripts": {
-    "clean": "rimraf ./dist/*",
-    "bundle": "rollup -c rollup.config.js",
-    "watch": "cross-env MODE=common ENV=prod rollup  -c rollup.config.js -w",
-    "serv": "serv",
+    "server": "http-server",
     "mock": "node ./server/index.js",
-    "build:compile": "cross-env MODE=common npm run bundle",
-    "build:common": "cross-env MODE=compile npm run bundle",
-    "build": "run-s clean build:compile build:common",
-    "pre": "run-s build serv",
-    "start": "npm run clean && run-p mock watch serv"
+    "watch": "cross-env NODE_ENV=development rollup -c rollup.config.js -w",
+    "build": "cross-env NODE_ENV=production  rollup -c rollup.config.js",
+    "pre": "run-s build server",
+    "start": "run-p mock watch server"
   },
   "repository": {
     "type": "git",
@@ -27,9 +23,8 @@
   "homepage": "https://github.com/AngusFu/v-folder#readme",
   "devDependencies": {
     "cross-env": "^3.1.4",
-    "lodash": "^4.17.4",
+    "http-server": "^0.9.0",
     "npm-run-all": "^4.0.1",
-    "rimraf": "^2.5.4",
     "rollup": "^0.41.4",
     "rollup-plugin-buble": "^0.15.0",
     "rollup-plugin-commonjs": "^7.0.0",
@@ -37,13 +32,11 @@
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-plugin-vue": "^2.2.20",
-    "rollup-watch": "^3.2.2",
-    "serv": "^0.2.4"
+    "rollup-watch": "^3.2.2"
   },
   "dependencies": {
-    "clone": "^2.1.0",
-    "compare-versions": "^3.0.0",
     "object-assign": "^4.1.1",
+    "v-deep-clone": "^1.0.3",
     "vue": "^2.1.10"
   }
 }

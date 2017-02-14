@@ -5,14 +5,13 @@
   <meta charset="UTF-8">
   <title>v-folder</title>
   <link href="//lib.baomitu.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="./dist/bundle.css">
+  <link rel="stylesheet" href="./dist/build.css">
 </head>
 <body style="margin: 40px;">
   <div id="app"></div>
-  <div id="app2"></div>
-  <script src="//lib.baomitu.com/vue/2.0.5/vue.js"></script>
+  <script src="//lib.baomitu.com/vue/2.1.5/vue.js"></script>
   <script src="//lib.baomitu.com/vue-resource/1.2.0/vue-resource.min.js"></script>
-  <script src="./dist/bundle.common.js"></script>
+  <script src="./dist/build.js"></script>
   <script>
   Vue.use(VFolder);
   
@@ -40,7 +39,7 @@
           checked: false
         },
         data: {
-          name: '/Users/',
+          name: 'C:/Users/',
           files: [],
           dirs: []
         },
@@ -59,7 +58,6 @@
       }
     }
   });
-
   </script>
 </body>
 </html>

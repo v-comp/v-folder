@@ -5,23 +5,20 @@ import vue from 'rollup-plugin-vue';
 import uglify from 'rollup-plugin-uglify';
 import replace from 'rollup-plugin-replace';
 
-let { MODE, ENV } = process.env;
-
 export default {
   entry: './src/index.js',
-  dest: `dist/bundle.${MODE}.js`,
+  dest: `dist/build.js`,
   format: 'umd',
   sourceMap: true,
   useStrict: true,
   moduleName: 'VFolder',
   plugins: [
     replace({
-      'process.env.MODE': JSON.stringify(MODE),
-      'process.env.ENV': JSON.stringify(ENV)
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
     }),
     vue({
-      css: `dist/bundle.css`,
-      compileTemplate: process.env.MODE === 'compile'
+      css: 'dist/build.css',
+      compileTemplate: true
     }),
     commonjs(),
     resolve({

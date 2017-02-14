@@ -1,5 +1,5 @@
 import objectAssign from 'object-assign';
-import deepClone from 'clone';
+import deepClone from 'v-deep-clone';
 import transform from '../src/transform';
 
 const arrPush = [].push;
@@ -9,7 +9,7 @@ const defaultConf = {
   branch: 'dirs',
   leaf: 'files',
   open: false,
-  checked: false
+  check: -1
 };
 
 export default class Store {
@@ -76,24 +76,44 @@ export default class Store {
   /**
    * check ascendents of certain level rescursively
    * to see if they should get checked
+   * this is a passive ation
    * 
    * @private
    * @param branch    the descendent branch
-   * @param checked  if the descendent is checked
+   * @param check     the descendent's check status
    */
-  checkBranchAscendents(branch, checked) {
-    let nextStatus = false;
+  checkBranchAscendents(branch, check) {
+    if (!branch) return;
 
-    if (branch) {
-      if (checked) {
-        let allBranchesChecked = !branch.branches.some(b => !b.node.checked);
-        let allLeavesChecked   = !branch.leafs.some(l => !l.checked);
-        nextStatus = allBranchesChecked && allLeavesChecked;
-      }
+    let { branches, leafs, node, level } = branch;
+    let nextStatus = 0;
 
-      branch.node.checked = nextStatus;
-      this.checkBranchAscendents(this.findParentBranch(branch.level), nextStatus);
+    switch (check) {
+      case 1:
+        // at least nextStatus will be zero,
+        // so let's see if all children checked
+        let branchesAllChecked = !branches.length || !branches.some(b => b.node.check < 1);
+        let leafsAllChecked = !leafs.length || !leafs.some(f => f.check < 1);
+        nextStatus = branchesAllChecked && leafsAllChecked ? 1 : 0;
+        break;
+
+      case 0:
+        // no doubt
+        nextStatus = 0;
+        break;
+
+      case -1:
+        // if all children are -1
+        // we'll get -1
+        // else we'll get 0
+        let branchesAllUnchecked = !branches.length || !branches.some(b => b.node.check > -1);
+        let leafsAllUnChecked = !leafs.length || !leafs.some(f => f.check > -1);
+        nextStatus = branchesAllUnchecked && leafsAllUnChecked ? -1 : 0;
+        break;
     }
+
+    node.check = nextStatus;
+    this.checkBranchAscendents(this.findParentBranch(level), nextStatus);
   }
 
   /**
@@ -102,14 +122,15 @@ export default class Store {
    *
    * @private
    * @param branch   current descendent branch
-   * @param checked  if the ascendent is checked
+   * @param check    the ascendent's check status
    */
-  checkBranchDescendents(branch, checked) {
-    branch.node.checked = checked;
-    branch.leafs.forEach(l => l.checked = checked);
+  checkBranchDescendents(branch, check) {
+    branch.node.check = check;
+    if (!check) return;
+    branch.leafs.forEach(l => l.check = check);
     branch.branches.forEach(b => {
-      b.node.checked = checked;
-      this.checkBranchDescendents(b, checked);
+      b.node.check = check;
+      this.checkBranchDescendents(b, check);
     });
   }
 
@@ -124,8 +145,12 @@ export default class Store {
    * @param level  level of the node checked/unchecked
    */
   checkNode(node) {
+    // node.check: -1(unchecked) 0(imtermedite) 1(checked)
+    // 0 -> 1 (and state 0 is passive)
+    // 1 <=> -1
     let branch = this.findCurrentBranch(node.level);
-    let nextState = !branch.node.checked;
+    let checkState = branch.node.check;
+    let nextState = checkState < 1 ? 1 : -1;
     this.checkBranchDescendents(branch, nextState);
     this.checkBranchAscendents(this.findParentBranch(branch.level), nextState);
   }
@@ -139,8 +164,8 @@ export default class Store {
    */
   checkLeaf(leaf) {
     let leafBranch = this.findParentBranch(leaf.level);
-    let nextState = !leaf.checked;
-    leaf.checked = nextState;
+    let nextState = -1 * leaf.check;
+    leaf.check = nextState;
     this.checkBranchAscendents(leafBranch, nextState);
   }
 
@@ -155,12 +180,12 @@ export default class Store {
       path: ''
     }
   ) {
-    let { level, path, checked } = node;
+    let { level, path, check } = node;
     let lvs = level.split('.').slice(1);
     let branch = transform(data, this.conf, level, path);
 
     branch.node.open = true;
-    branch.node.checked = checked;
+    branch.node.check = check;
     branch.node.status = 'done';
 
     if (lvs.length === 0) {
@@ -181,7 +206,7 @@ export default class Store {
     }
 
 
-    this.checkBranchDescendents(branch, checked);
+    this.checkBranchDescendents(branch, check);
   }
 
   /**
@@ -214,11 +239,11 @@ export default class Store {
     let result = [];
     let { node, branches, leafs, path } = branch;
 
-    if (node.checked) {
+    if (node.check > 0) {
       result.push(branch.path);
     } else {
-      leafs.forEach(({ checked, path }) => {
-        if (checked) {
+      leafs.forEach(({ check, path }) => {
+        if (check > 0) {
           result.push(path);
         }
       });

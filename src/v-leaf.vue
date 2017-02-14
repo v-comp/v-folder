@@ -1,12 +1,19 @@
 <template>
   <li class="v-leaf" @click="notify('change')" :key="data.level">
-    <i class="fa" :class="[ data.checked ? 'fa-check-square-o' : 'fa-square-o' ]"></i>
+    <i class="fa" :class="className"></i>
     {{data.name}}
   </li>
 </template>
 
 <script>
   import EventMixin from './mixin';
+
+  const classNames = [
+    'fa-square-o',
+    'fa-minus-square-o',
+    'fa-check-square-o',
+  ];
+
   export default {
     name: 'v-leaf',
     mixins: [EventMixin],
@@ -18,6 +25,11 @@
       uid: {
         type: [String, Number],
         required: true
+      }
+    },
+    computed: {
+      className() {
+        return classNames[this.data.check + 1];
       }
     }
   };
