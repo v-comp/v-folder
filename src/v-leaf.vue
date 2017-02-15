@@ -1,7 +1,7 @@
 <template>
   <li class="v-leaf" @click="notify('change')" :key="data.level">
     <i class="fa" :class="className"></i>
-    {{data.name}}
+    <span>{{data.name}}</span>
   </li>
 </template>
 
