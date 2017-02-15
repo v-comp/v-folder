@@ -1,4 +1,3 @@
-
 const http = require('http');
 const url  = require('url');
 const path = require('path');
@@ -37,5 +36,9 @@ http.createServer(function (req, res) {
   } catch (e) {}
   
 
-  res.end(JSON.stringify(ret));
+  res.end(JSON.stringify({
+    errno: 0,
+    errmsg: '',
+    data: ret
+  }));
 }).listen(1234);

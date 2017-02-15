@@ -3,13 +3,9 @@
 ---------------------------------------------------------------*/
 .v-branch-body {
   padding: 0;
-  font-size: 18px;
+  font-size: 16px;
   color: #666;
   list-style: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  -webkit-user-select: none;
-  user-select: none;
 }
 .v-branch-body .v-branch {
   padding-left: 27px;
@@ -27,8 +23,10 @@
   padding: 0 0 0  27px;
   list-style: none;
   overflow: hidden;
-  cursor: pointer;
   vertical-align: middle;
+}
+.v-node > * {
+  cursor: pointer;
 }
 .v-node .fa {
   width: 20px;
@@ -39,14 +37,23 @@
   color: #0c71c5;
 }
 
+.v-node .cursor-no-ops {
+  cursor: not-allowed;
+}
+.v-node .cursor-progress {
+  cursor: progress;
+}
+
 /*----------------------------------------------------------------
                           .v-leaf
 ---------------------------------------------------------------*/
 .v-leaf {
   margin: 0 0 0 27px;
   padding: 0 0 0 27px;
-  cursor: pointer;
   vertical-align: middle;
+}
+.v-leaf > * {
+  cursor: pointer;
 }
 .v-leaf .fa {
   display: inline-block;
@@ -56,11 +63,4 @@
 }
 .v-leaf .fa:hover {
   color: #0c71c5;
-}
-
-.cursor-no-ops {
-  cursor: not-allowed;
-}
-.cursor-progress {
-  cursor: progress;
 }

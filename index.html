@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -20,7 +19,6 @@
     template: `
       <div>
         <v-folder
-          :uid="uid"
           :data="data"
           :ajax="ajax"
           :conf="conf"
@@ -32,14 +30,14 @@
       return {
         uid: 0,
         conf: {
-          node: 'name',
+          node: 'sourceDir',
           branch: 'dirs',
           leaf: 'files',
           open: false,
           checked: false
         },
         data: {
-          name: '/Users',
+          sourceDir: 'C:/Users',
           files: [],
           dirs: []
         },
@@ -49,7 +47,8 @@
           params: {},
           data: {},
           headers: {},
-          pathAs: 'path'
+          pathAs: 'path',
+          process: (res) => res.data
         }
       };
     },

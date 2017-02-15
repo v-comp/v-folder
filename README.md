@@ -2,41 +2,52 @@
 
 A folder select vue@2 component.
 
+```bash
+# npm
+npm install --save v-folder
+
+# or yarn
+yarn add v-folder
+```
+
 ```javascript
+import VFolder from 'v-folder';
+Vue.use(VFolder);
+
 new Vue({
   el: '#app',
   template: `
-    <div>
-      <v-folder
-        :uid="uid"
-        :data="data"
-        :ajax="ajax"
-        :conf="conf"
-        @change="onChange"
-      ></v-folder>
-    </div>
+      <v-folder :data="data" :ajax="ajax" :conf="conf" @change="onChange"></v-folder>
   `,
   data() {
     return {
       uid: 0,
       conf: {
-        node: 'name',
+        // tree node name
+        node: 'sourceDir',
+        // KEY NAME of dirs/branches/parents etc.. .
         branch: 'dirs',
-        leaf: 'files',
-        open: false,
-        checked: false
+        // KEY NAME of  files/leafs/children etc...
+        leaf: 'files'
       },
       data: {
-        name: 'C:/Users/',
+        // root
+        sourceDir: 'C:/Users',
+        // children
         files: [],
         dirs: []
       },
+      // ajax settings
       ajax: {
+        method: 'GET',
         url: 'http://localhost:1234',
         params: {},
-        method: 'GET',
+        data: {},
         headers: {},
-        pathAs: 'path'
+        // params key of path
+        pathAs: 'path',
+        // process response data
+        process: (res) => res.data
       }
     };
   },

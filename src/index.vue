@@ -6,22 +6,18 @@
   </ul>
 </template>
 <script>
-  let KEY_MAP = {};
   import Store from './store';
   import EventMixin from './mixin';
   import VNode from './v-node.vue';
   import VLeaf from './v-leaf.vue';
   import VBranch from './v-branch.vue';
+  let uid = 0;
 
   export default {
     name: 'v-folder',
     mixins: [EventMixin],
     props: {
       data: Object,
-      uid: {
-        type: [String, Number],
-        required: true
-      },
       ajax: Object,
       conf: Object
     },
@@ -30,11 +26,21 @@
       'v-leaf': VLeaf,
       'v-branch': VBranch
     },
+    watch: {
+      data(newVal, oldVal) {
+        let nameKey = this.conf && this.conf.node || 'name';
+        if (newVal[nameKey] !== oldVal[nameKey]) {
+          this.store = new Store(newVal, this.conf);
+        }
+      }
+    },
     data() {
       return {
+        uid: uid++,
         store: new Store(this.data, this.conf)
       };
     },
+
     computed: {
       root() {
         return this.store.dataStore;
@@ -49,22 +55,24 @@
         return this.root.node;
       }
     },
+    
     methods: {
-      request(node, done) {
-        if (!this.ajax) {
-          return done('ajax:false');
-        }
-        
+      resTransform(data, node) {
         let conf = this.conf || {};
         let dirKey  = conf['branch'] || 'dirs';
         let fileKey = conf['leaf'] || 'files';
         let nameKey = conf['node'] || 'name';
-  
-        let reqConf = this.ajax;
+
+        data[nameKey] = node.name;
+        data[dirKey]  = data[dirKey].map(d => ({[nameKey]: d}));
+        return data;
+      },
+
+      getReqConf(node) {
+        let reqConf = this.ajax || {};
         let { url, method, data, params, pathAs, headers } = reqConf;
-        let isGET = method.toUpperCase() === 'GET';
-        
-        if (isGET) {
+
+        if (method || method.toUpperCase() === 'GET') {
           reqConf.params = (params || {});
           reqConf.params[pathAs] = node.path;
         } else {
@@ -72,60 +80,74 @@
           reqConf.data[pathAs] = node.path;
         }
 
+        reqConf.method = method || 'GET';
         reqConf.headers = headers || {};
 
-        this.$http(reqConf)
-          .then(r => r.data)
-          .then(data => {
-            data[nameKey] = node.name;
-            data[dirKey]  = data[dirKey].map(d => ({[nameKey]: d}));
-            done(null, data);
-          })
-          .catch(e => done(e));
+        return reqConf;
+      },
+
+      request(node) {
+        if (!this.ajax) {
+          return Promise.reject('ajax:false');
+        }
+
+        let process = this.ajax.process || (res => res);
+
+        return this.$http(this.getReqConf(node))
+          .then(res => {
+            let data = process(res.data);
+            return this.resTransform(data, node);
+          });
       }
     },
-    created() {
-      let uid = this.uid;
-      if (uid in KEY_MAP) {
-        throw 'each <v-folder> instance must get an unique `uid` property';
-      } else {
-        KEY_MAP[uid] = null;
-      }
 
+    created() {
       this.listen('change', node => {
-        this.store.commit('change', node, (res) => this.$emit('change', res));
+        this.store.commit('change', node).then(res => this.$emit('change', res));
       });
 
       this.listen('unfold', node => {
-        this.store.commit('fold', node, () => {
-          node.status = 'loading';
-  
-          this.request(node, (err, data) => {
-            if (err) {
+        if (node.open && node.canOpen) {
+          node.open =! node.open;
+          return;
+        }
+
+        this.store.commit('unfold', node)
+          .then(() => {
+
+            this.request(node)
+            .then(data => {
+              if (data) {
+                this.store.merge(data, node);
+              } else {
+                throw 'empty';
+              }
+            })
+            .catch(e => {
               node.status = 'empty';
-            } else {
-              this.store.merge(data, node);
-            }
-          });
-        });
+              window.console && console.error(e);
+            });
+
+          })
+          .catch(e => node.status = 'done');
+
       });
+    },
+    destroyed () {
+      this.distroy();
     }
   };
 </script>
 
-<style scoped>
+<style>
   /*----------------------------------------------------------------
                             .v-branch
   ---------------------------------------------------------------*/
   .v-branch-body {
     padding: 0;
-    font-size: 18px;
+    font-size: 16px;
     color: #666;
     list-style: none;
-    -moz-user-select: none;
-    -ms-user-select: none;
-    -webkit-user-select: none;
-    user-select: none;
   }
   .v-branch-body .v-branch {
     padding-left: 27px;
@@ -143,8 +165,10 @@
     padding: 0 0 0  27px;
     list-style: none;
     overflow: hidden;
-    cursor: pointer;
     vertical-align: middle;
+  }
+  .v-node > * {
+    cursor: pointer;
   }
   .v-node .fa {
     width: 20px;
@@ -155,14 +179,23 @@
     color: #0c71c5;
   }
 
+  .v-node .cursor-no-ops {
+    cursor: not-allowed;
+  }
+  .v-node .cursor-progress {
+    cursor: progress;
+  }
+
   /*----------------------------------------------------------------
                             .v-leaf
   ---------------------------------------------------------------*/
   .v-leaf {
     margin: 0 0 0 27px;
     padding: 0 0 0 27px;
-    cursor: pointer;
     vertical-align: middle;
+  }
+  .v-leaf > * {
+    cursor: pointer;
   }
   .v-leaf .fa {
     display: inline-block;
@@ -172,13 +205,6 @@
   }
   .v-leaf .fa:hover {
     color: #0c71c5;
-  }
-
-  .cursor-no-ops {
-    cursor: not-allowed;
-  }
-  .cursor-progress {
-    cursor: progress;
   }
 </style>
 

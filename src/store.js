@@ -1,9 +1,8 @@
 import objectAssign from 'object-assign';
 import deepClone from 'v-deep-clone';
-import transform from '../src/transform';
+import transform from './transform';
 
 const arrPush = [].push;
-const noop = _ => _;
 const defaultConf = {
   node: 'name',
   branch: 'dirs',
@@ -14,10 +13,10 @@ const defaultConf = {
 
 export default class Store {
   constructor(data, conf) {
-    let path = data.path || data.name;
+    this.conf = objectAssign({}, defaultConf, conf);
+    let path = data.path || data[this.conf.node] || '/';
     let name = path.split('/').filter(s => !!s).slice(-1)[0] || data.name;
     data.name = name;
-    this.conf = objectAssign({}, conf, defaultConf);
     this.dataStore = transform(data, this.conf, '0', path);
   }
 
@@ -212,22 +211,26 @@ export default class Store {
   /**
    * deal with actions
    */
-  commit(action, elem, callback = noop) {
-    let isNode = elem.type === 'node';
-    
-    switch (action) {
-      case 'change':
-        this[isNode ? 'checkNode' : 'checkLeaf'](elem);
-        callback(this.getPathResult());
-        break;
+  commit(action, elem) {
+    return new Promise((resolve, reject) => {
+      let isNode = elem.type === 'node';
+      
+      if (action === 'change') {
+          this[isNode ? 'checkNode' : 'checkLeaf'](elem);
+          return resolve(this.getPathResult());
+      }
 
-      case 'fold':
-        if (isNode) {
-          elem.open = !elem.open;
-          elem.canOpen || elem.status === 'done' || callback();
+      if (action === 'unfold' && isNode) {
+        elem.open = !elem.open;
+
+        if (!elem.canOpen && elem.status !== 'done') {
+          elem.status = 'loading';
+          resolve();
+        } else {
+          reject();
         }
-        break;
-    }
+      }
+    });
   }
 
   /**

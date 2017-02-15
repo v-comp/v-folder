@@ -7,9 +7,9 @@ export default {
       this.___von(type, e => {
         fn(e);
       });
+    },
+    distroy() {
+      this.___voff();
     }
-  },
-  destroyed() {
-    this.___voff();
   }
 };
