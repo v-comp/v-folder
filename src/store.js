@@ -1,5 +1,5 @@
-import objectAssign from 'object-assign';
-import deepClone from 'v-deep-clone';
+import objectAssign from './utils/object-assign';
+import deepClone from './utils/deepCopy';
 import transform from './transform';
 
 const arrPush = [].push;

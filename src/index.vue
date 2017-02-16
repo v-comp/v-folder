@@ -149,10 +149,10 @@
     color: #666;
     list-style: none;
   }
-  .v-branch-body .v-branch {
-    padding-left: 27px;
+  .v-branch-body > .v-branch {
+    padding-left: 20px;
   }
-  .v-branch ul {
+  .v-branch > ul {
     margin: 0;
     padding: 0;
     list-style: none;
@@ -162,14 +162,9 @@
                             .v-node
   ---------------------------------------------------------------*/
   .v-node {
-    padding: 0 0 0  27px;
-    list-style: none;
-    overflow: hidden;
-    vertical-align: middle;
+    padding: 0 0 0  20px;
   }
-  .v-node > * {
-    cursor: pointer;
-  }
+
   .v-node .fa {
     width: 20px;
     color: #0d83e6;
@@ -178,11 +173,10 @@
   .v-node .fa:hover {
     color: #0c71c5;
   }
-
-  .v-node .cursor-no-ops {
+  .v-node > .cursor-no-ops {
     cursor: not-allowed;
   }
-  .v-node .cursor-progress {
+  .v-node > .cursor-progress {
     cursor: progress;
   }
 
@@ -190,12 +184,8 @@
                             .v-leaf
   ---------------------------------------------------------------*/
   .v-leaf {
-    margin: 0 0 0 27px;
-    padding: 0 0 0 27px;
-    vertical-align: middle;
-  }
-  .v-leaf > * {
-    cursor: pointer;
+    margin: 0 0 0 20px;
+    padding: 0 0 0 20px;
   }
   .v-leaf .fa {
     display: inline-block;
@@ -205,6 +195,32 @@
   }
   .v-leaf .fa:hover {
     color: #0c71c5;
+  }
+
+
+  /*----------------------------------------------------------------
+                            common
+  ---------------------------------------------------------------*/
+  .v-node,
+  .v-leaf {
+    height: 1.5em;
+    line-height: 1.5em;
+    vertical-align: middle;
+    overflow: hidden;
+  }
+  .v-node > .fa,
+  .v-node > span > .fa,
+  .v-leaf > .fa {
+    float: left;
+    width: 20px;
+    height: 1.5em;
+    line-height: 1.5em;
+    cursor: pointer;
+  }
+  .v-node > span, 
+  .v-leaf > span {
+    float: left;
+    cursor: pointer;
   }
 </style>
 

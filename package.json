@@ -1,10 +1,10 @@
 {
   "name": "v-folder",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "vue tree select component",
   "scripts": {
     "mock": "node ./server/index.js",
-    "watchify": "watchify -vd -g envify src/index.js -s VFolder -o dist/build.js",
+    "watchify": "watchify -vd -g envify src/demo.js -o dist/build.js",
     "serve": "http-server -o -s -c 1 -a localhost",
     "dev": "cross-env NODE_ENV=development npm-run-all --parallel mock watchify serve",
     "build": "cross-env NODE_ENV=production browserify -g envify src/index.js -s VFolder | uglifyjs -c warnings=false -m > dist/build.js"
@@ -33,8 +33,6 @@
     "watchify": "^3.4.0"
   },
   "dependencies": {
-    "object-assign": "^4.1.1",
-    "v-deep-clone": "^1.0.3",
     "vue": "^2.1.10"
   },
   "browserify": {

@@ -1,5 +1,3 @@
-import objectAssign from 'object-assign';
-
 /**
  * standardlize a normal tree object
  * 
