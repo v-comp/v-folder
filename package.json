@@ -4,7 +4,7 @@
   "description": "vue tree select component",
   "scripts": {
     "mock": "node ./server/index.js",
-    "watchify": "watchify -vd -g envify src/demo.js -o dist/build.js",
+    "watchify": "watchify -vd -g envify src/demo.js -o dist/demo.js",
     "serve": "http-server -o -s -c 1 -a localhost",
     "dev": "cross-env NODE_ENV=development npm-run-all --parallel mock watchify serve",
     "build": "cross-env NODE_ENV=production browserify -g envify src/index.js -s VFolder | uglifyjs -c warnings=false -m > dist/build.js"

@@ -40,12 +40,13 @@ function transform(data = {}, config, level, path = "") {
   });
 
   let status = canOpen ? 'filled' : 'empty';
+
   return {
     name,
     type: 'branch',
     level,
     path,
-    node: { name, open: level == 0 || open, canOpen, check, level, path, type: 'node', status },
+    node: { name, open: level == '0' || open, canOpen, check, level, path, type: 'node', status },
     branches,
     leafs,
   };

@@ -1,7 +1,25 @@
 import VFolderComp from './index';
 window.Vue.use(VFolderComp);
 
-new Vue({
+let data = {
+  sourceDir: 'root',
+  dirs: [{
+    sourceDir: 'subroot-1',
+    dirs: ['empty 1', 'empty 2', 'empty 3'],
+    files: ['file1234', 'file5678', 'filexyzw']
+  }, {
+    sourceDir: 'subroot-2',
+    dirs: ['empty 1', 'empty 2', 'empty 3'],
+    files: ['file1234', 'file5678', 'filexyzw']
+  }, {
+    sourceDir: 'subroot-3',
+    dirs: ['empty 1', 'empty 2', 'empty 3'],
+    files: ['file1234', 'file5678', 'filexyzw']
+  }],
+  files: ['a.js', 'b.js', 'c.js']
+};
+
+let vm = new Vue({
   el: '#app',
   template: `
     <div>
@@ -45,3 +63,7 @@ new Vue({
     }
   }
 });
+
+if (!/localhost/.test(location.href)) {
+  vm.data = data;
+}
