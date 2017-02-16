@@ -1,6 +1,12 @@
 # v-folder
 
-A folder select vue@2 component.
+A component made for  vue@2, for tree/directory/files selection or displaying. 
+
+## Note
+
+**Vue version above 2.1.5 is required.**
+
+## Install
 
 ```bash
 # npm
@@ -9,6 +15,12 @@ npm install --save v-folder
 # or yarn
 yarn add v-folder
 ```
+
+## Demo
+
+You can run `npm run dev` for local preview.
+
+For project integration, see configurations bellow:
 
 ```javascript
 import VFolder from 'v-folder';

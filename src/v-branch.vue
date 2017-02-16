@@ -1,9 +1,9 @@
 <template>
-  <li :key="node.level" class="v-branch">
+  <li :key="data.node.level" class="v-branch">
     <ul class="v-branch-body">
-      <v-node :data="node" :uid="uid"></v-node>
-      <v-branch v-show="node.open" v-for="branch in branches" :data="branch" :uid="uid"></v-branch>
-      <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf" :uid="uid"></v-leaf>
+      <v-node :data="data.node" :uid="uid"></v-node>
+      <v-branch v-show="data.node.open" v-for="branch in data.branches" :data="branch" :uid="uid"></v-branch>
+      <v-leaf v-show="data.node.open" v-for="leaf in data.leafs" :data="leaf" :uid="uid"></v-leaf>
     </ul>
   </li>
 </template>
@@ -29,17 +29,6 @@
     components: {
       'v-node': VNode,
       'v-leaf': VLeaf
-    },
-    computed: {
-      branches() {
-        return this.data.branches;
-      },
-      leafs() {
-        return this.data.leafs;
-      },
-      node() {
-        return  this.data.node;
-      }
     }
   };
 </script>
