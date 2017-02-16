@@ -29,6 +29,6 @@ export default {
     buble({
       objectAssign: 'Object.assign'
     }),
-    uglify()
+	uglify()
   ]
 };

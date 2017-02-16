@@ -9,7 +9,7 @@ import objectAssign from 'object-assign';
  */
 export default transform;
 
-function transform(data = {}, config, level, path) {
+function transform(data = {}, config, level, path = "") {
   path = path.replace(/^\s*\/+/, '/');
   let { node, branch, leaf, check, open } = config;
   let name = data[node] || '/';
@@ -21,11 +21,14 @@ function transform(data = {}, config, level, path) {
     path = name === '/' ? name : `/${name}`;
   }
 
-  branches = branches.map((branch, i) => {
-    if (typeof branch === 'string') {
-      branch = { [node]: branch };
+  branches = branches.map((item, i) => {
+    if (typeof item === 'string') {
+      let o = {};
+      o[node] = item;
+      item = o;
     }
-    return transform(branch, config, `${level}.${i}`, `${path}/${branch[node]}`);
+
+    return transform(item, config, `${level}.${i}`, `${path}/${item[node]}`);
   });
   
   leafs = leafs.map((leaf, i) => {
@@ -39,7 +42,6 @@ function transform(data = {}, config, level, path) {
   });
 
   let status = canOpen ? 'filled' : 'empty';
-
   return {
     name,
     type: 'branch',
