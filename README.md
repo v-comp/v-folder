@@ -23,6 +23,7 @@ You can run `npm run dev` for local preview.
 For project integration, see configurations bellow:
 
 ```javascript
+
 import VFolder from 'v-folder';
 Vue.use(VFolder);
 
@@ -69,4 +70,5 @@ new Vue({
     }
   }
 });
+
 ```
