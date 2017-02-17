@@ -25,7 +25,7 @@ export default {
     }),
     vue({
       css: 'dist/build.css',
-      compileTemplate: false
+      compileTemplate: true
     }),
     commonjs(),
     resolve({

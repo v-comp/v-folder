@@ -456,7 +456,7 @@ var classNames = [
   'fa-minus-square-o',
   'fa-check-square-o' ];
 
-var VNode = { template: "<li class=\"v-node\" :key=\"data.level\"><i class=\"fa\" :class=\"folderClass\" @click=\"notify('unfold')\"></i> <span @click=\"notify('change')\"><i class=\"fa\" :class=\"checkboxClass\"></i> {{data.name}}</span></li>",
+var VNode = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.level,staticClass:"v-node"},[_c('i',{staticClass:"fa",class:_vm.folderClass,on:{"click":function($event){_vm.notify('unfold');}}}),_vm._v(" "),_c('span',{on:{"click":function($event){_vm.notify('change');}}},[_c('i',{staticClass:"fa",class:_vm.checkboxClass}),_vm._v(" "+_vm._s(_vm.data.name))])])},staticRenderFns: [],
   name: 'v-node',
   mixins: [EventMixin],
   props: {
@@ -493,7 +493,7 @@ var classNames$1 = [
   'fa-minus-square-o',
   'fa-check-square-o' ];
 
-var VLeaf = { template: "<li class=\"v-leaf\" @click=\"notify('change')\" :key=\"data.level\"><i class=\"fa\" :class=\"className\"></i> <span>{{data.name}}</span></li>",
+var VLeaf = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.level,staticClass:"v-leaf",on:{"click":function($event){_vm.notify('change');}}},[_c('i',{staticClass:"fa",class:_vm.className}),_vm._v(" "),_c('span',[_vm._v(_vm._s(_vm.data.name))])])},staticRenderFns: [],
   name: 'v-leaf',
   mixins: [EventMixin],
   props: {
@@ -513,7 +513,7 @@ var VLeaf = { template: "<li class=\"v-leaf\" @click=\"notify('change')\" :key=\
   }
 };
 
-var VBranch = { template: "<li :key=\"data.node.level\" class=\"v-branch\"><ul class=\"v-branch-body\"><v-node :data=\"data.node\" :uid=\"uid\"></v-node><v-branch v-show=\"data.node.open\" v-for=\"branch in data.branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"data.node.open\" v-for=\"leaf in data.leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul></li>",
+var VBranch = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.node.level,staticClass:"v-branch"},[_c('ul',{staticClass:"v-branch-body"},[_c('v-node',{attrs:{"data":_vm.data.node,"uid":_vm.uid}}),_vm._l((_vm.data.branches),function(branch){return _c('v-branch',{directives:[{name:"show",rawName:"v-show",value:(_vm.data.node.open),expression:"data.node.open"}],attrs:{"data":branch,"uid":_vm.uid}})}),_vm._l((_vm.data.leafs),function(leaf){return _c('v-leaf',{directives:[{name:"show",rawName:"v-show",value:(_vm.data.node.open),expression:"data.node.open"}],attrs:{"data":leaf,"uid":_vm.uid}})})],2)])},staticRenderFns: [],
   name: 'v-branch',
   mixins: [EventMixin],
   props: {
@@ -536,7 +536,7 @@ __$styleInject(".v-branch-body{padding:0;font-size:16px;color:#666;list-style:no
 
 var uid = 0;
 
-var VFolderComp$1 = { template: "<ul class=\"v-branch-body\"><v-node :data=\"node\" :uid=\"uid\"></v-node><v-branch v-show=\"node.open\" v-for=\"branch in branches\" :data=\"branch\" :uid=\"uid\"></v-branch><v-leaf v-show=\"node.open\" v-for=\"leaf in leafs\" :data=\"leaf\" :uid=\"uid\"></v-leaf></ul>",
+var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',{staticClass:"v-branch-body"},[_c('v-node',{attrs:{"data":_vm.node,"uid":_vm.uid}}),_vm._l((_vm.branches),function(branch){return _c('v-branch',{directives:[{name:"show",rawName:"v-show",value:(_vm.node.open),expression:"node.open"}],attrs:{"data":branch,"uid":_vm.uid}})}),_vm._l((_vm.leafs),function(leaf){return _c('v-leaf',{directives:[{name:"show",rawName:"v-show",value:(_vm.node.open),expression:"node.open"}],attrs:{"data":leaf,"uid":_vm.uid}})})],2)},staticRenderFns: [],
   name: 'v-folder',
   mixins: [EventMixin],
   props: {
