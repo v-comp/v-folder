@@ -1,7 +1,8 @@
 {
   "name": "v-folder",
-  "version": "1.2.2",
+  "version": "1.3.0",
   "description": "vue tree select component",
+  "main": "dist/build.js",
   "scripts": {
     "mock": "node ./server/index.js",
     "watchify": "watchify -vd -g envify src/demo.js -o dist/demo.js",
