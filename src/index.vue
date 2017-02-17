@@ -11,6 +11,8 @@
   import VNode from './v-node.vue';
   import VLeaf from './v-leaf.vue';
   import VBranch from './v-branch.vue';
+  import styles from './styles.css';
+
   let uid = 0;
 
   export default {
@@ -138,68 +140,3 @@
     }
   };
 </script>
-
-<style>
-  /*----------------------------------------------------------------
-                            .v-branch
-  ---------------------------------------------------------------*/
-  .v-branch-body {
-    padding: 0;
-    font-size: 16px;
-    color: #666;
-    list-style: none;
-  }
-  .v-branch-body > .v-branch {
-    padding-left: 20px;
-  }
-  .v-branch > ul {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-  }
-
-  /*----------------------------------------------------------------
-                        .v-node && .v-leaf
-  ---------------------------------------------------------------*/
-  .v-node,
-  .v-leaf {
-    height: 1.5em;
-    line-height: 1.5em;
-    padding: 0 0 0 20px;
-    vertical-align: middle;
-    overflow: hidden;
-  }
-  .v-leaf {
-    margin: 0 0 0 20px;
-  }
-  
-  .v-node > .fa,
-  .v-node > span > .fa,
-  .v-leaf > .fa {
-    float: left;
-    width: 20px;
-    height: 1.5em;
-    line-height: 1.5em;
-    color: #0d83e6;
-    text-align: center;
-    cursor: pointer;
-  }
-  .v-node > span, 
-  .v-leaf > span {
-    float: left;
-    cursor: pointer;
-  }
-
-  .v-node .fa:hover,
-  .v-leaf .fa:hover {
-    color: #0c71c5;
-  }
-  .v-node > .cursor-no-ops {
-    cursor: not-allowed;
-  }
-  .v-node > .cursor-progress {
-    cursor: progress;
-  }
-</style>
-
-
