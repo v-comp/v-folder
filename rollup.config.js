@@ -24,7 +24,6 @@ export default {
       extensions: ['.css']
     }),
     vue({
-      css: 'dist/build.css',
       compileTemplate: true
     }),
     commonjs(),
