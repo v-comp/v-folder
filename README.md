@@ -16,6 +16,8 @@ npm install --save v-folder
 yarn add v-folder
 ```
 
+**Note that [font-awsome](http://fontawesome.io) is required.**
+
 ## Demo
 
 You can run `npm run dev` for local preview.
@@ -72,3 +74,8 @@ new Vue({
 });
 
 ```
+
+## Screenshot
+
+![](https://p2.ssl.qhimg.com/t01ce62550057a38251.png)
+
