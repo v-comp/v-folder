@@ -714,7 +714,8 @@ VFolderComp$1.install = function (Vue) {
   var mi = ref[1];
   var pa = ref[2];
   
-  if (mj > 2 || mj === 2 && (mi > 1 || mi === 1 && pa >= 5)) {
+  var versionOk = mj > 2 || +mj === 2 && (mi > 1 || +mi === 1 && pa >= 5);
+  if (!versionOk) {
     throw 'You should at least get Vue.js@2.1.5.'
   }
 
