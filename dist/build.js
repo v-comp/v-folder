@@ -513,7 +513,7 @@ var VLeaf = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_v
   }
 };
 
-var VBranch = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.node.level,staticClass:"v-branch"},[_c('ul',{staticClass:"v-branch-body"},[_c('v-node',{attrs:{"data":_vm.data.node,"uid":_vm.uid}}),_vm._l((_vm.data.branches),function(branch){return _c('v-branch',{directives:[{name:"show",rawName:"v-show",value:(_vm.data.node.open),expression:"data.node.open"}],attrs:{"data":branch,"uid":_vm.uid}})}),_vm._l((_vm.data.leafs),function(leaf){return _c('v-leaf',{directives:[{name:"show",rawName:"v-show",value:(_vm.data.node.open),expression:"data.node.open"}],attrs:{"data":leaf,"uid":_vm.uid}})})],2)])},staticRenderFns: [],
+var VBranch = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.node.level,staticClass:"v-branch"},[_c('ul',{staticClass:"v-branch-body"},[_c('v-node',{attrs:{"data":_vm.data.node,"uid":_vm.uid}}),_vm._l((_vm.data.branches),function(branch){return _c('v-branch',{directives:[{name:"show",rawName:"v-show",value:(_vm.data.node.open),expression:"data.node.open"}],key:_vm.data.node.name,attrs:{"data":branch,"uid":_vm.uid}})}),_vm._l((_vm.data.leafs),function(leaf){return _c('v-leaf',{directives:[{name:"show",rawName:"v-show",value:(_vm.data.node.open),expression:"data.node.open"}],key:_vm.data.node.name,attrs:{"data":leaf,"uid":_vm.uid}})})],2)])},staticRenderFns: [],
   name: 'v-branch',
   mixins: [EventMixin],
   props: {
