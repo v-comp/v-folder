@@ -109,16 +109,20 @@
       });
 
       this.listen('unfold', node => {
+        const force = this.ajax && !this.ajax.once;
+
         if (node.open && node.canOpen) {
-          node.open =! node.open;
+          node.open = !node.open;
+          // request on unfolding every time
+          if (force) {
+            this.store.empty(node); 
+          }
           return;
         }
 
-        this.store.commit('unfold', node)
+        this.store.commit('unfold', node, force)
           .then(() => {
-
-            this.request(node)
-            .then(data => {
+            this.request(node).then(data => {
               if (data) {
                 this.store.merge(data, node);
               } else {
@@ -129,10 +133,8 @@
               node.status = 'empty';
               window.console && console.error(e);
             });
-
           })
           .catch(e => node.status = 'done');
-
       });
     },
     destroyed () {

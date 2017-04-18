@@ -12,8 +12,8 @@ function transform(data = {}, config, level, path = "") {
   let { node, branch, leaf, check, open } = config;
   let name = data[node] || '/';
   let branches = data[branch] || [];
-  let leafs   = data[leaf] || [];
-  let canOpen  = branches.length > 0 || leafs.length > 0;
+  let leafs = data[leaf] || [];
+  let canOpen = branches.length > 0 || leafs.length > 0;
 
   if (!path) {
     path = name === '/' ? name : `/${name}`;
@@ -28,7 +28,7 @@ function transform(data = {}, config, level, path = "") {
 
     return transform(item, config, `${level}.${i}`, `${path}/${item[node]}`);
   });
-  
+
   leafs = leafs.map((leaf, i) => {
     return {
       name: leaf,

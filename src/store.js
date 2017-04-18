@@ -204,14 +204,30 @@ export default class Store {
       this.replace(clone);
     }
 
-
     this.checkBranchDescendents(branch, check);
+
+    return branch;
+  }
+
+  /**
+   * empty a branch
+   */
+  empty(node) {
+    let branch = this.findCurrentBranch(node.level);
+    let parent = this.findParentBranch(node.level);
+    branch.node.open = false;
+    branch.node.check = -1;
+    branch.node.status = 'empty';
+    branch.node.canOpen = false;
+    branch.leafs = [];
+    branch.branches = [];
+    this.checkBranchAscendents(this.findParentBranch(branch.level), -1);
   }
 
   /**
    * deal with actions
    */
-  commit(action, elem) {
+  commit(action, elem, force = false) {
     return new Promise((resolve, reject) => {
       let isNode = elem.type === 'node';
       
@@ -223,7 +239,7 @@ export default class Store {
       if (action === 'unfold' && isNode) {
         elem.open = !elem.open;
 
-        if (!elem.canOpen && elem.status !== 'done') {
+        if (!elem.canOpen && force || elem.status !== 'done') {
           elem.status = 'loading';
           resolve();
         } else {
