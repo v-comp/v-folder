@@ -53,7 +53,7 @@ let vm = new Vue({
         data: {},
         headers: {},
         pathAs: 'path',
-        // once: true,
+        once: true,
         process: (res) => res.data
       }
     };

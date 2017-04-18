@@ -787,7 +787,7 @@ var vm = new Vue({
         data: {},
         headers: {},
         pathAs: 'path',
-        // once: true,
+        once: true,
         process: function (res) { return res.data; }
       }
     };

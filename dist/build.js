@@ -111,8 +111,8 @@ function transform$1(data, config, level, path) {
   var open = config.open;
   var name = data[node] || '/';
   var branches = data[branch] || [];
-  var leafs   = data[leaf] || [];
-  var canOpen  = branches.length > 0 || leafs.length > 0;
+  var leafs = data[leaf] || [];
+  var canOpen = branches.length > 0 || leafs.length > 0;
 
   if (!path) {
     path = name === '/' ? name : ("/" + name);
@@ -127,7 +127,7 @@ function transform$1(data, config, level, path) {
 
     return transform$1(item, config, (level + "." + i), (path + "/" + (item[node])));
   });
-  
+
   leafs = leafs.map(function (leaf, i) {
     return {
       name: leaf,
@@ -366,15 +366,32 @@ Store.prototype.merge = function merge (
     this.replace(clone);
   }
 
-
   this.checkBranchDescendents(branch, check);
+
+  return branch;
+};
+
+/**
+ * empty a branch
+ */
+Store.prototype.empty = function empty (node) {
+  var branch = this.findCurrentBranch(node.level);
+  var parent = this.findParentBranch(node.level);
+  branch.node.open = false;
+  branch.node.check = -1;
+  branch.node.status = 'empty';
+  branch.node.canOpen = false;
+  branch.leafs = [];
+  branch.branches = [];
+  this.checkBranchAscendents(this.findParentBranch(branch.level), -1);
 };
 
 /**
  * deal with actions
  */
-Store.prototype.commit = function commit (action, elem) {
+Store.prototype.commit = function commit (action, elem, force) {
     var this$1 = this;
+    if ( force === void 0 ) force = false;
 
   return new Promise(function (resolve, reject) {
     var isNode = elem.type === 'node';
@@ -387,7 +404,7 @@ Store.prototype.commit = function commit (action, elem) {
     if (action === 'unfold' && isNode) {
       elem.open = !elem.open;
 
-      if (!elem.canOpen && elem.status !== 'done') {
+      if (!elem.canOpen && force || elem.status !== 'done') {
         elem.status = 'loading';
         resolve();
       } else {
@@ -640,16 +657,20 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
     });
 
     this.listen('unfold', function (node) {
+      var force = this$1.ajax && !this$1.ajax.once;
+
       if (node.open && node.canOpen) {
-        node.open =! node.open;
+        node.open = !node.open;
+        // request on unfolding every time
+        if (force) {
+          this$1.store.empty(node); 
+        }
         return;
       }
 
-      this$1.store.commit('unfold', node)
+      this$1.store.commit('unfold', node, force)
         .then(function () {
-
-          this$1.request(node)
-          .then(function (data) {
+          this$1.request(node).then(function (data) {
             if (data) {
               this$1.store.merge(data, node);
             } else {
@@ -660,10 +681,8 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
             node.status = 'empty';
             window.console && console.error(e);
           });
-
         })
         .catch(function (e) { return node.status = 'done'; });
-
     });
   },
   destroyed: function destroyed () {
