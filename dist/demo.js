@@ -93,6 +93,18 @@ function deepCopy (obj, cache) {
 }
 
 /**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+function find (list, f) {
+  return list.filter(f)[0]
+}
+
+/**
  * standardlize a normal tree object
  * 
  * @param data   data to be transformed
@@ -352,7 +364,8 @@ Store.prototype.merge = function merge (
   if (lvs.length === 0) {
     this.replace(branch);
   } else {
-    var clone = deepCopy(this.dataStore);
+	var store = this.dataStore;
+    var clone = deepCopy(store);
     var top = clone;
     var pos = lvs.pop();
     var index = 0;

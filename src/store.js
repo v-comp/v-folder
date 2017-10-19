@@ -190,7 +190,8 @@ export default class Store {
     if (lvs.length === 0) {
       this.replace(branch);
     } else {
-      let clone = deepClone(this.dataStore);
+      let store = this.dataStore;
+      let clone = deepClone(store);
       let top   = clone;
       let pos   = lvs.pop();
       let index = 0;

@@ -36,3 +36,16 @@ export default function deepCopy (obj, cache = []) {
 
   return copy
 }
+
+/**
+ * Get the first item that pass the test
+ * by second argument function
+ *
+ * @param {Array} list
+ * @param {Function} f
+ * @return {*}
+ */
+function find (list, f) {
+  return list.filter(f)[0]
+}
+

@@ -1,6 +1,6 @@
 {
   "name": "v-folder",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "description": "vue tree select component",
   "scripts": {
     "server": "http-server",
@@ -33,9 +33,7 @@
     "rollup-plugin-replace": "^1.1.1",
     "rollup-plugin-uglify": "^1.0.1",
     "rollup-plugin-vue": "^2.2.20",
-    "rollup-watch": "^3.2.2"
-  },
-  "dependencies": {
+    "rollup-watch": "^3.2.2",
     "vue": "^2.1.10"
   }
 }
