@@ -9,12 +9,14 @@ import cssnano from 'cssnano';
 
 const isDEV = process.env.NODE_ENV !== 'production';
 export default {
-  entry: isDEV ? './src/demo.js' : './src/index.js',
-  dest:  isDEV ? 'dist/demo.js'  : 'dist/build.js',
-  format: 'umd',
-  sourceMap: true,
-  useStrict: true,
-  moduleName: 'VFolder',
+  input: isDEV ? './src/demo.js' : './src/index.js',
+  output: {
+    strict: true,
+    format: 'umd',
+    sourcemap: true,
+    name: 'VFolder',
+    file: isDEV ? 'dist/demo.js'  : 'dist/build.js'
+  },
   plugins: [
     replace({
       'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
