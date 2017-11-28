@@ -7,7 +7,7 @@
 </template>
 
 <script>
-  import EventMixin from './mixin'
+  import EventMixin from '../utils/mixin'
 
   const classNames = [
     'fa-square-o',

@@ -69,3 +69,17 @@
 .v-node > .cursor-progress {
   cursor: progress;
 }
+
+.v-node .fa-spinner {
+  animation: fa-spin 2s infinite linear;
+}
+
+@keyframes c-loading {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(359deg);
+  }
+}

@@ -21,7 +21,7 @@
 </template>
 
 <script>
-  import EventMixin from './mixin'
+  import EventMixin from '../utils/mixin'
   import VLeaf from './v-leaf.vue'
   import VNode from './v-node.vue'
 

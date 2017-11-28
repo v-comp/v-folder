@@ -21,6 +21,7 @@
   },
   "homepage": "https://github.com/AngusFu/v-folder#readme",
   "devDependencies": {
+    "autoprefixer": "^7.1.6",
     "cross-env": "^3.1.4",
     "cssnano": "^3.10.0",
     "http-server": "^0.9.0",

@@ -517,15 +517,15 @@ Store.prototype.raw = function raw () {
 var EventMixin = {
   methods: {
     notify: function notify (type) {
-      this.___vemit(type, this.data);
+      this.$announce(type, this.data);
     },
     listen: function listen (type, fn) {
-      this.___von(type, function (e) {
+      this.$listen(type, function (e) {
         fn(e);
       });
     },
     distroy: function distroy () {
-      this.___voff();
+      this.$hangup();
     }
   }
 };
@@ -611,23 +611,26 @@ var VBranch = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
   }
 };
 
-__$styleInject(".v-branch-body{font-family:PingFang SC,Lantinghei SC,Helvetica Neue,Helvetica,Arial,Microsoft YaHei,STHeitiSC-Light,simsun,WenQuanYi Zen Hei,WenQuanYi Micro Hei,\"sans-serif\";padding:0;list-style:none}.v-branch-body>.v-branch{padding-left:1.2em}.v-branch>ul{margin:0;padding:0;list-style:none}.v-leaf,.v-node{display:flex;align-items:center;padding:0 0 0 1.2em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}.v-leaf{margin:0 0 0 1.2em}.v-leaf span,.v-node span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.v-leaf>.fa,.v-node>.fa{width:1.2em;flex:auto 0 0;color:#0d83e6;vertical-align:middle;cursor:pointer}.v-leaf>.fa:before,.v-node>.fa:before{vertical-align:middle}.v-leaf .fa:hover,.v-node .fa:hover{color:#0c71c5}.v-node>.cursor-no-ops{cursor:not-allowed}.v-node>.cursor-progress{cursor:progress}",undefined);
+__$styleInject(".v-branch-body{font-family:PingFang SC,Lantinghei SC,Helvetica Neue,Helvetica,Arial,Microsoft YaHei,STHeitiSC-Light,simsun,WenQuanYi Zen Hei,WenQuanYi Micro Hei,\"sans-serif\";padding:0;list-style:none}.v-branch-body>.v-branch{padding-left:1.2em}.v-branch>ul{margin:0;padding:0;list-style:none}.v-leaf,.v-node{display:-webkit-box;display:-ms-flexbox;display:flex;-webkit-box-align:center;-ms-flex-align:center;align-items:center;padding:0 0 0 1.2em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}.v-leaf{margin:0 0 0 1.2em}.v-leaf span,.v-node span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.v-leaf>.fa,.v-node>.fa{width:1.2em;-webkit-box-flex:1;-ms-flex:auto 0 0px;flex:auto 0 0;color:#0d83e6;vertical-align:middle;cursor:pointer}.v-leaf>.fa:before,.v-node>.fa:before{vertical-align:middle}.v-leaf .fa:hover,.v-node .fa:hover{color:#0c71c5}.v-node>.cursor-no-ops{cursor:not-allowed}.v-node>.cursor-progress{cursor:progress}.v-node .fa-spinner{-webkit-animation:fa-spin 2s infinite linear;animation:fa-spin 2s infinite linear}",undefined);
 
 var uid = 0;
 
-var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',{staticClass:"v-branch-body"},[_c('v-node',{attrs:{"data":_vm.node,"uid":_vm.uid}}),_vm._l((_vm.branches),function(branch){return _c('v-branch',{directives:[{name:"show",rawName:"v-show",value:(_vm.node.open),expression:"node.open"}],attrs:{"data":branch,"uid":_vm.uid}})}),_vm._l((_vm.leafs),function(leaf){return _c('v-leaf',{directives:[{name:"show",rawName:"v-show",value:(_vm.node.open),expression:"node.open"}],attrs:{"data":leaf,"uid":_vm.uid}})})],2)},staticRenderFns: [],
+var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('ul',{staticClass:"v-branch-body"},[_c('v-node',{attrs:{"data":_vm.node,"uid":_vm.uid}}),_vm._l((_vm.branches),function(branch){return _c('v-branch',{directives:[{name:"show",rawName:"v-show",value:(_vm.node.open),expression:"node.open"}],key:_vm.uid,attrs:{"data":branch,"uid":_vm.uid}})}),_vm._l((_vm.leafs),function(leaf){return _c('v-leaf',{directives:[{name:"show",rawName:"v-show",value:(_vm.node.open),expression:"node.open"}],key:_vm.uid,attrs:{"data":leaf,"uid":_vm.uid}})})],2)},staticRenderFns: [],
   name: 'v-folder',
   mixins: [EventMixin],
+
   props: {
     data: Object,
     ajax: Object,
     conf: Object
   },
+
   components: {
     'v-node': VNode,
     'v-leaf': VLeaf,
     'v-branch': VBranch
   },
+
   watch: {
     data: function data(newVal, oldVal) {
       var nameKey = this.conf && this.conf.node || 'name';
@@ -670,26 +673,26 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
       return data
     },
 
-    getReqConf: function getReqConf(node) {
-      var reqConf = this.ajax || {};
-      var method = reqConf.method;
-      var data = reqConf.data;
-      var params = reqConf.params;
-      var pathAs = reqConf.pathAs;
-      var headers = reqConf.headers;
+    getRequestConfig: function getRequestConfig(node) {
+      var config = this.ajax || {};
+      var method = config.method;
+      var data = config.data;
+      var params = config.params;
+      var pathAs = config.pathAs;
+      var headers = config.headers;
 
       if (method || method.toUpperCase() === 'GET') {
-        reqConf.params = (params || {});
-        reqConf.params[pathAs] = node.path;
+        config.params = (params || {});
+        config.params[pathAs] = node.path;
       } else {
-        reqConf.data = (data || {});
-        reqConf.data[pathAs] = node.path;
+        config.data = (data || {});
+        config.data[pathAs] = node.path;
       }
 
-      reqConf.method = method || 'GET';
-      reqConf.headers = headers || {};
+      config.method = method || 'GET';
+      config.headers = headers || {};
 
-      return reqConf
+      return config
     },
 
     request: function request(node) {
@@ -701,7 +704,7 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
 
       var process = this.ajax.process || (function (res) { return res; });
 
-      return this.$http(this.getReqConf(node))
+      return this.$http(this.getRequestConfig(node))
         .then(function (res) {
           var data = process(res.data);
           return this$1.resTransform(data, node)
@@ -729,18 +732,17 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
         .then(function () {
 
           this$1.request(node)
-          .then(function (data) {
-            if (data) {
-              this$1.store.merge(data, node);
-            } else {
-              throw 'empty'
-            }
-          })
-          .catch(function (e) {
-            node.status = 'empty';
-            window.console && console.error(e);
-          });
-
+            .then(function (data) {
+              if (data) {
+                this$1.store.merge(data, node);
+              } else {
+                throw 'empty'
+              }
+            })
+            .catch(function (e) {
+              node.status = 'empty';
+              window.console && console.error(e);
+            });
         })
         .catch(function (e) {
           node.status = 'done';
@@ -753,56 +755,55 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
   }
 };
 
-var eventMix = function (Vue) {
-  var hub = new Vue();
-  var proto = Vue.prototype;
+function createDispatchCenter (Vue) {
+  var dispatchCenter = new Vue();
 
-  proto.___von = function (type, cb) {
-    var uid = this.uid;
+  Vue.prototype.$listen = function (type, callback) {
+    var ref = this;
+    var uid = ref.uid;
 
-    var fn = function (e) {
-      if (uid === e.uid && cb) {
-        cb(e.data);
+    dispatchCenter.$on(("#" + uid + "@" + type), function (e) {
+      if (e && uid === e.uid) {
+        callback && callback(e.data);
       }
-    };
-
-    hub.$on(("#" + uid + "@" + type), fn);
+    });
   };
 
-  proto.___vemit = function (type, data) {
-    var uid = this.uid;
-    hub.$emit(("#" + uid + "@" + type), { data: data, uid: uid });
+  Vue.prototype.$announce = function (type, data) {
+    var ref = this;
+    var uid = ref.uid;
+    dispatchCenter.$emit(("#" + uid + "@" + type), { data: data, uid: uid });
   };
 
-  proto.___voff = function (type, fn) {
-    var uid = this.uid;
+  Vue.prototype.$hangup = function (type, fn) {
+    var ref = this;
+    var uid = ref.uid;
 
     if (type) {
-      hub.$off(("#" + uid + "@" + type), fn);
+      dispatchCenter.$off(("#" + uid + "@" + type), fn);
     } else {
-      uid = "#" + uid + "@";
-      var types = Object.keys(hub._events);
-      var match = types.filter(function (k) { return k.indexOf(uid) === 0; });
-      match.forEach(function (k) {
-        hub.$off(k, fn);
-      });
+      var prefix = "#" + uid + "@";
+      Object.keys(dispatchCenter._events)
+        .filter(function (k) { return k.indexOf(prefix) === 0; })
+        .forEach(function (k) { return dispatchCenter.$off(k, fn); });
     }
   };
-};
+
+  return dispatchCenter
+}
 
 VFolderComp$1.install = function (Vue) {
   var ref = Vue.version.split('.');
   var major = ref[0];
   var minor = ref[1];
   var patch = ref[2];
-
   var versionOk = major > 2 || (+major === 2 && (minor > 1 || (+minor === 1 && patch >= 5)));
 
   if (!versionOk) {
     throw new Error('You should at least get Vue.js@2.1.5.')
   }
 
-  eventMix(Vue);
+  createDispatchCenter(Vue);
   Vue.component(VFolderComp$1.name, VFolderComp$1);
 };
 

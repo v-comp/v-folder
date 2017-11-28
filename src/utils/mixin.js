@@ -1,15 +1,15 @@
 export default {
   methods: {
     notify (type) {
-      this.___vemit(type, this.data)
+      this.$announce(type, this.data)
     },
     listen (type, fn) {
-      this.___von(type, e => {
+      this.$listen(type, e => {
         fn(e)
       })
     },
     distroy () {
-      this.___voff()
+      this.$hangup()
     }
   }
 }

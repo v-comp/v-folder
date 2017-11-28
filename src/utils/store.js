@@ -1,5 +1,5 @@
 import objectAssign from 'object-assign'
-import deepClone from './utils/deepCopy'
+import deepClone from './deepCopy'
 import transform from './transform'
 
 const arrPush = [].push

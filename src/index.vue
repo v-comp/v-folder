@@ -1,16 +1,29 @@
 <template>
   <ul class="v-branch-body">
     <v-node :data="node" :uid="uid"></v-node>
-    <v-branch v-show="node.open" v-for="branch in branches" :data="branch" :uid="uid"></v-branch>
-    <v-leaf v-show="node.open" v-for="leaf in leafs" :data="leaf" :uid="uid"></v-leaf>
+    <v-branch
+      v-show="node.open"
+      v-for="branch in branches"
+      :data="branch"
+      :uid="uid"
+      :key="uid"
+    ></v-branch>
+    <v-leaf
+      v-show="node.open"
+      v-for="leaf in leafs"
+      :data="leaf"
+      :uid="uid"
+      :key="uid"
+    ></v-leaf>
   </ul>
 </template>
+
 <script>
-  import Store from './store'
-  import EventMixin from './mixin'
-  import VNode from './v-node.vue'
-  import VLeaf from './v-leaf.vue'
-  import VBranch from './v-branch.vue'
+  import Store from './utils/store'
+  import EventMixin from './utils/mixin'
+  import VNode from './components/v-node.vue'
+  import VLeaf from './components/v-leaf.vue'
+  import VBranch from './components/v-branch.vue'
   import styles from './styles.css'
 
   let uid = 0
@@ -18,16 +31,19 @@
   export default {
     name: 'v-folder',
     mixins: [EventMixin],
+
     props: {
       data: Object,
       ajax: Object,
       conf: Object
     },
+
     components: {
       'v-node': VNode,
       'v-leaf': VLeaf,
       'v-branch': VBranch
     },
+
     watch: {
       data(newVal, oldVal) {
         let nameKey = this.conf && this.conf.node || 'name'
@@ -70,22 +86,22 @@
         return data
       },
 
-      getReqConf(node) {
-        let reqConf = this.ajax || {}
-        let { url, method, data, params, pathAs, headers } = reqConf
+      getRequestConfig(node) {
+        let config = this.ajax || {}
+        let { url, method, data, params, pathAs, headers } = config
 
         if (method || method.toUpperCase() === 'GET') {
-          reqConf.params = (params || {})
-          reqConf.params[pathAs] = node.path
+          config.params = (params || {})
+          config.params[pathAs] = node.path
         } else {
-          reqConf.data = (data || {})
-          reqConf.data[pathAs] = node.path
+          config.data = (data || {})
+          config.data[pathAs] = node.path
         }
 
-        reqConf.method = method || 'GET'
-        reqConf.headers = headers || {}
+        config.method = method || 'GET'
+        config.headers = headers || {}
 
-        return reqConf
+        return config
       },
 
       request(node) {
@@ -95,7 +111,7 @@
 
         let process = this.ajax.process || (res => res)
 
-        return this.$http(this.getReqConf(node))
+        return this.$http(this.getRequestConfig(node))
           .then(res => {
             let data = process(res.data)
             return this.resTransform(data, node)
@@ -121,18 +137,17 @@
           .then(() => {
 
             this.request(node)
-            .then(data => {
-              if (data) {
-                this.store.merge(data, node)
-              } else {
-                throw 'empty'
-              }
-            })
-            .catch(e => {
-              node.status = 'empty'
-              window.console && console.error(e)
-            })
-
+              .then(data => {
+                if (data) {
+                  this.store.merge(data, node)
+                } else {
+                  throw 'empty'
+                }
+              })
+              .catch(e => {
+                node.status = 'empty'
+                window.console && console.error(e)
+              })
           })
           .catch(e => {
             node.status = 'done'
