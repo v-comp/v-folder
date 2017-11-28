@@ -21,35 +21,98 @@ function __$styleInject(css, returnValue) {
   return returnValue;
 }
 
-// http://devdocs.io/javascript/global_objects/object/assign
-if (typeof Object.assign != 'function') {
-  Object.assign = function (target, varArgs) { // .length of function is 2
-    'use strict';
-    var arguments$1 = arguments;
+/*
+object-assign
+(c) Sindre Sorhus
+@license MIT
+*/
 
-    if (target == null) { // TypeError if undefined or null
-      throw new TypeError('Cannot convert undefined or null to object');
-    }
+'use strict';
+/* eslint-disable no-unused-vars */
+var getOwnPropertySymbols = Object.getOwnPropertySymbols;
+var hasOwnProperty = Object.prototype.hasOwnProperty;
+var propIsEnumerable = Object.prototype.propertyIsEnumerable;
 
-    var to = Object(target);
+function toObject(val) {
+	if (val === null || val === undefined) {
+		throw new TypeError('Object.assign cannot be called with null or undefined');
+	}
 
-    for (var index = 1; index < arguments.length; index++) {
-      var nextSource = arguments$1[index];
-
-      if (nextSource != null) { // Skip over if undefined or null
-        for (var nextKey in nextSource) {
-          // Avoid bugs when hasOwnProperty is shadowed
-          if (Object.prototype.hasOwnProperty.call(nextSource, nextKey)) {
-            to[nextKey] = nextSource[nextKey];
-          }
-        }
-      }
-    }
-    return to;
-  };
+	return Object(val);
 }
 
-var objectAssign = Object.assign;
+function shouldUseNative() {
+	try {
+		if (!Object.assign) {
+			return false;
+		}
+
+		// Detect buggy property enumeration order in older V8 versions.
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=4118
+		var test1 = new String('abc');  // eslint-disable-line no-new-wrappers
+		test1[5] = 'de';
+		if (Object.getOwnPropertyNames(test1)[0] === '5') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test2 = {};
+		for (var i = 0; i < 10; i++) {
+			test2['_' + String.fromCharCode(i)] = i;
+		}
+		var order2 = Object.getOwnPropertyNames(test2).map(function (n) {
+			return test2[n];
+		});
+		if (order2.join('') !== '0123456789') {
+			return false;
+		}
+
+		// https://bugs.chromium.org/p/v8/issues/detail?id=3056
+		var test3 = {};
+		'abcdefghijklmnopqrst'.split('').forEach(function (letter) {
+			test3[letter] = letter;
+		});
+		if (Object.keys(Object.assign({}, test3)).join('') !==
+				'abcdefghijklmnopqrst') {
+			return false;
+		}
+
+		return true;
+	} catch (err) {
+		// We don't expect any of the above to throw, but better to be safe.
+		return false;
+	}
+}
+
+var index = shouldUseNative() ? Object.assign : function (target, source) {
+	var arguments$1 = arguments;
+
+	var from;
+	var to = toObject(target);
+	var symbols;
+
+	for (var s = 1; s < arguments.length; s++) {
+		from = Object(arguments$1[s]);
+
+		for (var key in from) {
+			if (hasOwnProperty.call(from, key)) {
+				to[key] = from[key];
+			}
+		}
+
+		if (getOwnPropertySymbols) {
+			symbols = getOwnPropertySymbols(from);
+			for (var i = 0; i < symbols.length; i++) {
+				if (propIsEnumerable.call(from, symbols[i])) {
+					to[symbols[i]] = from[symbols[i]];
+				}
+			}
+		}
+	}
+
+	return to;
+};
 
 /**
  * from https://github.com/vuejs/vuex/blob/dev/src/util.js
@@ -106,14 +169,14 @@ function find (list, f) {
 
 /**
  * standardlize a normal tree object
- * 
+ *
  * @param data   data to be transformed
  * @param conf   contains keys to extract data from `data`
  * @param level  identifier inferring depth
  */
-function transform$1(data, config, level, path) {
+function transform$1 (data, config, level, path) {
   if ( data === void 0 ) data = {};
-  if ( path === void 0 ) path = "";
+  if ( path === void 0 ) path = '';
 
   path = path.replace(/^\s*\/+/, '/');
   var node = config.node;
@@ -123,8 +186,8 @@ function transform$1(data, config, level, path) {
   var open = config.open;
   var name = data[node] || '/';
   var branches = data[branch] || [];
-  var leafs   = data[leaf] || [];
-  var canOpen  = branches.length > 0 || leafs.length > 0;
+  var leafs = data[leaf] || [];
+  var canOpen = branches.length > 0 || leafs.length > 0;
 
   if (!path) {
     path = name === '/' ? name : ("/" + name);
@@ -137,9 +200,9 @@ function transform$1(data, config, level, path) {
       item = o;
     }
 
-    return transform$1(item, config, (level + "." + i), (path + "/" + (item[node])));
+    return transform$1(item, config, (level + "." + i), (path + "/" + (item[node])))
   });
-  
+
   leafs = leafs.map(function (leaf, i) {
     return {
       name: leaf,
@@ -147,7 +210,7 @@ function transform$1(data, config, level, path) {
       check: check,
       level: (level + "." + i),
       path: (path + "/" + leaf)
-    };
+    }
   });
 
   var status = canOpen ? 'filled' : 'empty';
@@ -157,10 +220,10 @@ function transform$1(data, config, level, path) {
     type: 'branch',
     level: level,
     path: path,
-    node: { name: name, open: level == '0' || open, canOpen: canOpen, check: check, level: level, path: path, type: 'node', status: status },
+    node: { name: name, open: +level === 0 || open, canOpen: canOpen, check: check, level: level, path: path, type: 'node', status: status },
     branches: branches,
-    leafs: leafs,
-  };
+    leafs: leafs
+  }
 }
 
 var arrPush = [].push;
@@ -172,8 +235,8 @@ var defaultConf = {
   check: -1
 };
 
-var Store = function Store(data, conf) {
-  this.conf = objectAssign({}, defaultConf, conf);
+var Store = function Store (data, conf) {
+  this.conf = index({}, defaultConf, conf);
   var path = data.path || data[this.conf.node] || '/';
   var name = path.split('/').filter(function (s) { return !!s; }).slice(-1)[0] || data.name;
   data.name = name;
@@ -192,7 +255,7 @@ Store.prototype.replace = function replace (newTree) {
  * get parent branch by levelId.
  * result for a leaf is the branch it is on,
  * for a branch,result is it's parent branch.
- * 
+ *
  * @private
  * @param levelId
  */
@@ -203,50 +266,50 @@ Store.prototype.findParentBranch = function findParentBranch (levelId) {
   var branch = this.dataStore;
 
   if (length <= 1) {
-    return null;
-  }
-    
-  var lvs  = levelId.split('.').slice(1, -1);
-  var index= 0;
-
-  while (branch && (index = lvs.shift())) {
-    branch = branch.branches[index];
+    return null
   }
 
-  return branch;
+  var lvs = levelId.split('.').slice(1, -1);
+  var index$$1 = 0;
+
+  while (branch && (index$$1 = lvs.shift())) {
+    branch = branch.branches[index$$1];
+  }
+
+  return branch
 };
 
 /**
  * get current branch
- * 
+ *
  * @private
- * @param levelId 
+ * @param levelId
  */
 Store.prototype.findCurrentBranch = function findCurrentBranch (levelId) {
     if ( levelId === void 0 ) levelId = '';
 
-  var lvs  = levelId.split('.').slice(1);
-  var index= 0;
+  var lvs = levelId.split('.').slice(1);
+  var index$$1 = 0;
   var branch = this.dataStore;
 
-  while (branch && (index = lvs.shift())) {
-    branch = branch.branches[index];
+  while (branch && (index$$1 = lvs.shift())) {
+    branch = branch.branches[index$$1];
   }
 
-  return branch;
+  return branch
 };
 
 /**
  * check ascendents of certain level rescursively
  * to see if they should get checked
  * this is a passive ation
- * 
+ *
  * @private
  * @param branch  the descendent branch
  * @param check   the descendent's check status
  */
 Store.prototype.checkBranchAscendents = function checkBranchAscendents (branch, check) {
-  if (!branch) { return; }
+  if (!branch) { return }
 
   var branches = branch.branches;
     var leafs = branch.leafs;
@@ -261,12 +324,12 @@ Store.prototype.checkBranchAscendents = function checkBranchAscendents (branch, 
       var branchesAllChecked = !branches.length || !branches.some(function (b) { return b.node.check < 1; });
       var leafsAllChecked = !leafs.length || !leafs.some(function (f) { return f.check < 1; });
       nextStatus = branchesAllChecked && leafsAllChecked ? 1 : 0;
-      break;
+      break
 
     case 0:
       // no doubt
       nextStatus = 0;
-      break;
+      break
 
     case -1:
       // if all children are -1
@@ -275,7 +338,7 @@ Store.prototype.checkBranchAscendents = function checkBranchAscendents (branch, 
       var branchesAllUnchecked = !branches.length || !branches.some(function (b) { return b.node.check > -1; });
       var leafsAllUnChecked = !leafs.length || !leafs.some(function (f) { return f.check > -1; });
       nextStatus = branchesAllUnchecked && leafsAllUnChecked ? -1 : 0;
-      break;
+      break
   }
 
   node.check = nextStatus;
@@ -294,8 +357,11 @@ Store.prototype.checkBranchDescendents = function checkBranchDescendents (branch
     var this$1 = this;
 
   branch.node.check = check;
-  if (!check) { return; }
-  branch.leafs.forEach(function (l) { return l.check = check; });
+  if (!check) { return }
+  branch.leafs.forEach(function (l) {
+    l.check = check;
+  });
+
   branch.branches.forEach(function (b) {
     b.node.check = check;
     this$1.checkBranchDescendents(b, check);
@@ -303,13 +369,13 @@ Store.prototype.checkBranchDescendents = function checkBranchDescendents (branch
 };
 
 /************************************************************************
- * * * * * * * * * * * * Public Method Below * * * * * * * * * * * * * * 
+ * * * * * * * * * * * * Public Method Below * * * * * * * * * * * * * *
  ************************************************************************/
 /**
  * if one node is checked/unchecked,
  * we have to check/uncheck all ites descendents,
  * and find if its ascendents should be checked.
- * 
+ *
  * @param levellevel of the node checked/unchecked
  */
 Store.prototype.checkNode = function checkNode (node) {
@@ -322,12 +388,12 @@ Store.prototype.checkNode = function checkNode (node) {
   this.checkBranchDescendents(branch, nextState);
   this.checkBranchAscendents(this.findParentBranch(branch.level), nextState);
 };
-  
+
 /**
  * if a leaf is checked,
  * we have to check all its ascendents
  * to see if any should get checked to.
- * 
+ *
  * @param leaf
  */
 Store.prototype.checkLeaf = function checkLeaf (leaf) {
@@ -364,21 +430,21 @@ Store.prototype.merge = function merge (
   if (lvs.length === 0) {
     this.replace(branch);
   } else {
-	var store = this.dataStore;
+    var store = this.dataStore;
     var clone = deepCopy(store);
     var top = clone;
     var pos = lvs.pop();
-    var index = 0;
+    var index$$1 = 0;
 
-    while (index = lvs.shift()) {
-      top = top.branches[index];
+    // eslint-disable-next-line
+    while (index$$1 = lvs.shift()) {
+      top = top.branches[index$$1];
     }
     top.branches.splice(pos, 1, branch);
     top.node.canOpen = true;
 
     this.replace(clone);
   }
-
 
   this.checkBranchDescendents(branch, check);
 };
@@ -391,10 +457,10 @@ Store.prototype.commit = function commit (action, elem) {
 
   return new Promise(function (resolve, reject) {
     var isNode = elem.type === 'node';
-      
+
     if (action === 'change') {
-        this$1[isNode ? 'checkNode' : 'checkLeaf'](elem);
-        return resolve(this$1.getPathResult());
+      this$1[isNode ? 'checkNode' : 'checkLeaf'](elem);
+      return resolve(this$1.getPathResult())
     }
 
     if (action === 'unfold' && isNode) {
@@ -404,10 +470,11 @@ Store.prototype.commit = function commit (action, elem) {
         elem.status = 'loading';
         resolve();
       } else {
+        // eslint-disable-next-line
         reject();
       }
     }
-  });
+  })
 };
 
 /**
@@ -422,7 +489,6 @@ Store.prototype.getPathResult = function getPathResult (branch) {
   var node = branch.node;
     var branches = branch.branches;
     var leafs = branch.leafs;
-    var path = branch.path;
 
   if (node.check > 0) {
     result.push(branch.path);
@@ -441,24 +507,24 @@ Store.prototype.getPathResult = function getPathResult (branch) {
     });
   }
 
-  return result;
+  return result
 };
 
 Store.prototype.raw = function raw () {
-  return transform$1.raw(this.dataStore, this.conf);
+  return transform$1.raw(this.dataStore, this.conf)
 };
 
 var EventMixin = {
   methods: {
-    notify: function notify(type) {
+    notify: function notify (type) {
       this.___vemit(type, this.data);
     },
-    listen: function listen(type, fn) {
+    listen: function listen (type, fn) {
       this.___von(type, function (e) {
         fn(e);
       });
     },
-    distroy: function distroy() {
+    distroy: function distroy () {
       this.___voff();
     }
   }
@@ -469,7 +535,7 @@ var classNames = [
   'fa-minus-square-o',
   'fa-check-square-o' ];
 
-var VNode = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.level,staticClass:"v-node"},[_c('i',{staticClass:"fa",class:_vm.folderClass,on:{"click":function($event){_vm.notify('unfold');}}}),_vm._v(" "),_c('span',{on:{"click":function($event){_vm.notify('change');}}},[_c('i',{staticClass:"fa",class:_vm.checkboxClass}),_vm._v(" "+_vm._s(_vm.data.name))])])},staticRenderFns: [],
+var VNode = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.level,staticClass:"v-node"},[_c('i',{staticClass:"fa",class:_vm.folderClass,on:{"click":function($event){_vm.notify('unfold');}}}),_vm._v(" "),_c('i',{staticClass:"fa",class:_vm.checkboxClass,on:{"click":function($event){_vm.notify('change');}}}),_vm._v(" "),_c('span',{on:{"click":function($event){_vm.notify('change');}}},[_vm._v(_vm._s(_vm.data.name))])])},staticRenderFns: [],
   name: 'v-node',
   mixins: [EventMixin],
   props: {
@@ -493,10 +559,10 @@ var VNode = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_v
         'fa-folder-open-o': !folderLoding && folderOpen,
         'fa-folder-o': !folderLoding && !folderOpen,
         'cursor-no-ops': isEmpty
-      };
+      }
     },
     checkboxClass: function checkboxClass() {
-      return classNames[this.data.check + 1];
+      return classNames[this.data.check + 1]
     }
   }
 };
@@ -506,7 +572,7 @@ var classNames$1 = [
   'fa-minus-square-o',
   'fa-check-square-o' ];
 
-var VLeaf = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.level,staticClass:"v-leaf",on:{"click":function($event){_vm.notify('change');}}},[_c('i',{staticClass:"fa",class:_vm.className}),_vm._v(" "),_c('span',[_vm._v(_vm._s(_vm.data.name))])])},staticRenderFns: [],
+var VLeaf = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_vm._self._c||_h;return _c('li',{key:_vm.data.level,staticClass:"v-leaf",on:{"click":function($event){_vm.notify('change');}}},[_c('i',{staticClass:"fa",class:_vm.className}),_c('span',[_vm._v(_vm._s(_vm.data.name))])])},staticRenderFns: [],
   name: 'v-leaf',
   mixins: [EventMixin],
   props: {
@@ -521,7 +587,7 @@ var VLeaf = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=_v
   },
   computed: {
     className: function className() {
-      return classNames$1[this.data.check + 1];
+      return classNames$1[this.data.check + 1]
     }
   }
 };
@@ -545,7 +611,7 @@ var VBranch = {render: function(){var _vm=this;var _h=_vm.$createElement;var _c=
   }
 };
 
-__$styleInject(".v-branch-body{padding:0;font-size:16px;color:#666;list-style:none}.v-branch-body>.v-branch{padding-left:20px}.v-branch>ul{margin:0;padding:0;list-style:none}.v-leaf,.v-node{height:1.5em;line-height:1.5em;padding:0 0 0 20px;vertical-align:middle;overflow:hidden}.v-leaf{margin:0 0 0 20px}.v-leaf>.fa,.v-node>.fa,.v-node>span>.fa{float:left;width:20px;height:1.5em;line-height:1.5em;color:#0d83e6;text-align:center;cursor:pointer}.v-leaf>span,.v-node>span{float:left;cursor:pointer}.v-leaf .fa:hover,.v-node .fa:hover{color:#0c71c5}.v-node>.cursor-no-ops{cursor:not-allowed}.v-node>.cursor-progress{cursor:progress}",undefined);
+__$styleInject(".v-branch-body{font-family:PingFang SC,Lantinghei SC,Helvetica Neue,Helvetica,Arial,Microsoft YaHei,STHeitiSC-Light,simsun,WenQuanYi Zen Hei,WenQuanYi Micro Hei,\"sans-serif\";padding:0;list-style:none}.v-branch-body>.v-branch{padding-left:1.2em}.v-branch>ul{margin:0;padding:0;list-style:none}.v-leaf,.v-node{display:flex;align-items:center;padding:0 0 0 1.2em;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;cursor:pointer}.v-leaf{margin:0 0 0 1.2em}.v-leaf span,.v-node span{overflow:hidden;white-space:nowrap;text-overflow:ellipsis}.v-leaf>.fa,.v-node>.fa{width:1.2em;flex:auto 0 0;color:#0d83e6;vertical-align:middle;cursor:pointer}.v-leaf>.fa:before,.v-node>.fa:before{vertical-align:middle}.v-leaf .fa:hover,.v-node .fa:hover{color:#0c71c5}.v-node>.cursor-no-ops{cursor:not-allowed}.v-node>.cursor-progress{cursor:progress}",undefined);
 
 var uid = 0;
 
@@ -574,21 +640,21 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
     return {
       uid: uid++,
       store: new Store(this.data, this.conf)
-    };
+    }
   },
 
   computed: {
     root: function root() {
-      return this.store.dataStore;
+      return this.store.dataStore
     },
     branches: function branches() {
-      return this.root.branches;
+      return this.root.branches
     },
     leafs: function leafs() {
-      return this.root.leafs;
+      return this.root.leafs
     },
     node: function node() {
-      return this.root.node;
+      return this.root.node
     }
   },
   
@@ -596,18 +662,16 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
     resTransform: function resTransform(data, node) {
       var conf = this.conf || {};
       var dirKey  = conf['branch'] || 'dirs';
-      var fileKey = conf['leaf'] || 'files';
       var nameKey = conf['node'] || 'name';
 
       data[nameKey] = node.name;
-      data[dirKey]  = data[dirKey].map(function (d) { return (( obj = {}, obj[nameKey] = d, obj ))
+      data[dirKey]  = data[dirKey].map(function (d) { return (( obj = {}, obj[nameKey] = d, obj))
         var obj; });
-      return data;
+      return data
     },
 
     getReqConf: function getReqConf(node) {
       var reqConf = this.ajax || {};
-      var url = reqConf.url;
       var method = reqConf.method;
       var data = reqConf.data;
       var params = reqConf.params;
@@ -625,14 +689,14 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
       reqConf.method = method || 'GET';
       reqConf.headers = headers || {};
 
-      return reqConf;
+      return reqConf
     },
 
     request: function request(node) {
       var this$1 = this;
 
       if (!this.ajax) {
-        return Promise.reject('ajax:false');
+        return Promise.reject('ajax:false')
       }
 
       var process = this.ajax.process || (function (res) { return res; });
@@ -640,8 +704,8 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
       return this.$http(this.getReqConf(node))
         .then(function (res) {
           var data = process(res.data);
-          return this$1.resTransform(data, node);
-        });
+          return this$1.resTransform(data, node)
+        })
     }
   },
 
@@ -649,16 +713,19 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
     var this$1 = this;
 
     this.listen('change', function (node) {
-      this$1.store.commit('change', node).then(function (res) { return this$1.$emit('change', res); });
+      this$1.store
+        .commit('change', node)
+        .then(function (res) { return this$1.$emit('change', res); });
     });
 
     this.listen('unfold', function (node) {
       if (node.open && node.canOpen) {
         node.open =! node.open;
-        return;
+        return
       }
 
-      this$1.store.commit('unfold', node)
+      this$1.store
+        .commit('unfold', node)
         .then(function () {
 
           this$1.request(node)
@@ -666,7 +733,7 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
             if (data) {
               this$1.store.merge(data, node);
             } else {
-              throw 'empty';
+              throw 'empty'
             }
           })
           .catch(function (e) {
@@ -675,7 +742,9 @@ var VFolderComp$1 = {render: function(){var _vm=this;var _h=_vm.$createElement;v
           });
 
         })
-        .catch(function (e) { return node.status = 'done'; });
+        .catch(function (e) {
+          node.status = 'done';
+        });
 
     });
   },
@@ -690,12 +759,13 @@ var eventMix = function (Vue) {
 
   proto.___von = function (type, cb) {
     var uid = this.uid;
-    var vm = this;
-    var fn = function(e) {
+
+    var fn = function (e) {
       if (uid === e.uid && cb) {
         cb(e.data);
       }
     };
+
     hub.$on(("#" + uid + "@" + type), fn);
   };
 
@@ -711,7 +781,6 @@ var eventMix = function (Vue) {
       hub.$off(("#" + uid + "@" + type), fn);
     } else {
       uid = "#" + uid + "@";
-      var len = uid.length;
       var types = Object.keys(hub._events);
       var match = types.filter(function (k) { return k.indexOf(uid) === 0; });
       match.forEach(function (k) {
@@ -723,20 +792,26 @@ var eventMix = function (Vue) {
 
 VFolderComp$1.install = function (Vue) {
   var ref = Vue.version.split('.');
-  var mj = ref[0];
-  var mi = ref[1];
-  var pa = ref[2];
-  
-  var versionOk = mj > 2 || +mj === 2 && (mi > 1 || +mi === 1 && pa >= 5);
+  var major = ref[0];
+  var minor = ref[1];
+  var patch = ref[2];
+
+  var versionOk = major > 2 || (+major === 2 && (minor > 1 || (+minor === 1 && patch >= 5)));
+
   if (!versionOk) {
-    throw 'You should at least get Vue.js@2.1.5.'
+    throw new Error('You should at least get Vue.js@2.1.5.')
   }
 
   eventMix(Vue);
   Vue.component(VFolderComp$1.name, VFolderComp$1);
 };
 
-window.Vue.use(VFolderComp$1);
+if (typeof winodw !== 'undefined' && window.Vue) {
+  window.Vue.use(VFolderComp$1);
+}
+
+var Vue = window.Vue;
+Vue.use(VFolderComp$1);
 
 var data = {
   sourceDir: 'root',
@@ -759,7 +834,7 @@ var data = {
 var vm = new Vue({
   el: '#app',
   template: "\n    <div>\n      <v-folder\n        :data=\"data\"\n        :ajax=\"ajax\"\n        :conf=\"conf\"\n        @change=\"onChange\"\n      ></v-folder>\n    </div>\n  ",
-  data: function data() {
+  data: function data () {
     return {
       uid: 0,
       conf: {
@@ -783,16 +858,16 @@ var vm = new Vue({
         pathAs: 'path',
         process: function (res) { return res.data; }
       }
-    };
+    }
   },
   methods: {
-    onChange: function onChange(result) {
+    onChange: function onChange (result) {
       console.log(result);
     }
   }
 });
 
-if (!/localhost/.test(location.href)) {
+if (!/localhost/.test(window.location.href)) {
   vm.data = data;
 }
 
