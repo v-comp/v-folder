@@ -1,5 +1,7 @@
-import VFolderComp from './index';
-window.Vue.use(VFolderComp);
+import VFolderComp from './index'
+
+const Vue = window.Vue
+Vue.use(VFolderComp)
 
 let data = {
   sourceDir: 'root',
@@ -17,7 +19,7 @@ let data = {
     files: ['file1234', 'file5678', 'filexyzw']
   }],
   files: ['a.js', 'b.js', 'c.js']
-};
+}
 
 let vm = new Vue({
   el: '#app',
@@ -31,7 +33,7 @@ let vm = new Vue({
       ></v-folder>
     </div>
   `,
-  data() {
+  data () {
     return {
       uid: 0,
       conf: {
@@ -55,15 +57,15 @@ let vm = new Vue({
         pathAs: 'path',
         process: (res) => res.data
       }
-    };
+    }
   },
   methods: {
-    onChange(result) {
-      console.log(result);
+    onChange (result) {
+      console.log(result)
     }
   }
-});
+})
 
-if (!/localhost/.test(location.href)) {
-  vm.data = data;
+if (!/localhost/.test(window.location.href)) {
+  vm.data = data
 }

@@ -6,14 +6,14 @@
   </ul>
 </template>
 <script>
-  import Store from './store';
-  import EventMixin from './mixin';
-  import VNode from './v-node.vue';
-  import VLeaf from './v-leaf.vue';
-  import VBranch from './v-branch.vue';
-  import styles from './styles.css';
+  import Store from './store'
+  import EventMixin from './mixin'
+  import VNode from './v-node.vue'
+  import VLeaf from './v-leaf.vue'
+  import VBranch from './v-branch.vue'
+  import styles from './styles.css'
 
-  let uid = 0;
+  let uid = 0
 
   export default {
     name: 'v-folder',
@@ -30,9 +30,9 @@
     },
     watch: {
       data(newVal, oldVal) {
-        let nameKey = this.conf && this.conf.node || 'name';
+        let nameKey = this.conf && this.conf.node || 'name'
         if (newVal[nameKey] !== oldVal[nameKey]) {
-          this.store = new Store(newVal, this.conf);
+          this.store = new Store(newVal, this.conf)
         }
       }
     },
@@ -40,103 +40,108 @@
       return {
         uid: uid++,
         store: new Store(this.data, this.conf)
-      };
+      }
     },
 
     computed: {
       root() {
-        return this.store.dataStore;
+        return this.store.dataStore
       },
       branches() {
-        return this.root.branches;
+        return this.root.branches
       },
       leafs() {
-        return this.root.leafs;
+        return this.root.leafs
       },
       node() {
-        return this.root.node;
+        return this.root.node
       }
     },
     
     methods: {
       resTransform(data, node) {
-        let conf = this.conf || {};
-        let dirKey  = conf['branch'] || 'dirs';
-        let fileKey = conf['leaf'] || 'files';
-        let nameKey = conf['node'] || 'name';
+        let conf = this.conf || {}
+        let dirKey  = conf['branch'] || 'dirs'
+        let fileKey = conf['leaf'] || 'files'
+        let nameKey = conf['node'] || 'name'
 
-        data[nameKey] = node.name;
-        data[dirKey]  = data[dirKey].map(d => ({[nameKey]: d}));
-        return data;
+        data[nameKey] = node.name
+        data[dirKey]  = data[dirKey].map(d => ({[nameKey]: d}))
+        return data
       },
 
       getReqConf(node) {
-        let reqConf = this.ajax || {};
-        let { url, method, data, params, pathAs, headers } = reqConf;
+        let reqConf = this.ajax || {}
+        let { url, method, data, params, pathAs, headers } = reqConf
 
         if (method || method.toUpperCase() === 'GET') {
-          reqConf.params = (params || {});
-          reqConf.params[pathAs] = node.path;
+          reqConf.params = (params || {})
+          reqConf.params[pathAs] = node.path
         } else {
-          reqConf.data = (data || {});
-          reqConf.data[pathAs] = node.path;
+          reqConf.data = (data || {})
+          reqConf.data[pathAs] = node.path
         }
 
-        reqConf.method = method || 'GET';
-        reqConf.headers = headers || {};
+        reqConf.method = method || 'GET'
+        reqConf.headers = headers || {}
 
-        return reqConf;
+        return reqConf
       },
 
       request(node) {
         if (!this.ajax) {
-          return Promise.reject('ajax:false');
+          return Promise.reject('ajax:false')
         }
 
-        let process = this.ajax.process || (res => res);
+        let process = this.ajax.process || (res => res)
 
         return this.$http(this.getReqConf(node))
           .then(res => {
-            let data = process(res.data);
-            return this.resTransform(data, node);
-          });
+            let data = process(res.data)
+            return this.resTransform(data, node)
+          })
       }
     },
 
     created() {
       this.listen('change', node => {
-        this.store.commit('change', node).then(res => this.$emit('change', res));
-      });
+        this.store
+          .commit('change', node)
+          .then(res => this.$emit('change', res))
+      })
 
       this.listen('unfold', node => {
         if (node.open && node.canOpen) {
-          node.open =! node.open;
-          return;
+          node.open =! node.open
+          return
         }
 
-        this.store.commit('unfold', node)
+        this.store
+          .commit('unfold', node)
           .then(() => {
 
             this.request(node)
             .then(data => {
               if (data) {
-                this.store.merge(data, node);
+                this.store.merge(data, node)
               } else {
-                throw 'empty';
+                throw 'empty'
               }
             })
             .catch(e => {
-              node.status = 'empty';
-              window.console && console.error(e);
-            });
+              node.status = 'empty'
+              window.console && console.error(e)
+            })
 
           })
-          .catch(e => node.status = 'done');
+          .catch(e => {
+            node.status = 'done'
+          })
 
-      });
+      })
     },
     destroyed () {
-      this.distroy();
+      this.distroy()
     }
-  };
+  }
 </script>

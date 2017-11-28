@@ -1,15 +1,15 @@
 export default {
   methods: {
-    notify(type) {
-      this.___vemit(type, this.data);
+    notify (type) {
+      this.___vemit(type, this.data)
     },
-    listen(type, fn) {
+    listen (type, fn) {
       this.___von(type, e => {
-        fn(e);
-      });
+        fn(e)
+      })
     },
-    distroy() {
-      this.___voff();
+    distroy () {
+      this.___voff()
     }
   }
-};
+}

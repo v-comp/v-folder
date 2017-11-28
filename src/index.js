@@ -1,16 +1,21 @@
-import VFolderComp from './index.vue';
-import { eventMix } from './install';
+import VFolderComp from './index.vue'
+import { eventMix } from './install'
 
 VFolderComp.install = Vue => {
-  let [mj, mi, pa] = Vue.version.split('.');
-  
-  let versionOk = mj > 2 || +mj === 2 && (mi > 1 || +mi === 1 && pa >= 5);
+  let [major, minor, patch] = Vue.version.split('.')
+
+  let versionOk = major > 2 || (+major === 2 && (minor > 1 || (+minor === 1 && patch >= 5)))
+
   if (!versionOk) {
-    throw 'You should at least get Vue.js@2.1.5.'
+    throw new Error('You should at least get Vue.js@2.1.5.')
   }
 
-  eventMix(Vue);
-  Vue.component(VFolderComp.name, VFolderComp);
-};
+  eventMix(Vue)
+  Vue.component(VFolderComp.name, VFolderComp)
+}
 
-export default VFolderComp;
+if (typeof winodw !== 'undefined' && window.Vue) {
+  window.Vue.use(VFolderComp)
+}
+
+export default VFolderComp

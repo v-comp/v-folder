@@ -1,36 +1,36 @@
 export const eventMix = function (Vue) {
-  let hub = new Vue();
-  let proto = Vue.prototype;
+  let hub = new Vue()
+  let proto = Vue.prototype
 
   proto.___von = function (type, cb) {
-    let uid = this.uid;
-    let vm = this;
-    let fn = function(e) {
+    let uid = this.uid
+
+    let fn = function (e) {
       if (uid === e.uid && cb) {
-        cb(e.data);
+        cb(e.data)
       }
-    };
-    hub.$on(`#${uid}@${type}`, fn);
-  };
+    }
+
+    hub.$on(`#${uid}@${type}`, fn)
+  }
 
   proto.___vemit = function (type, data) {
-    let uid = this.uid;
-    hub.$emit(`#${uid}@${type}`, { data, uid });
-  };
+    let uid = this.uid
+    hub.$emit(`#${uid}@${type}`, { data, uid })
+  }
 
   proto.___voff = function (type, fn) {
-    let uid = this.uid;
+    let uid = this.uid
 
     if (type) {
-      hub.$off(`#${uid}@${type}`, fn);
+      hub.$off(`#${uid}@${type}`, fn)
     } else {
       uid = `#${uid}@`
-      let len = uid.length;
-      let types = Object.keys(hub._events);
-      let match = types.filter(k => k.indexOf(uid) === 0);
+      let types = Object.keys(hub._events)
+      let match = types.filter(k => k.indexOf(uid) === 0)
       match.forEach(k => {
-        hub.$off(k, fn);
+        hub.$off(k, fn)
       })
     }
-  };
-};
+  }
+}

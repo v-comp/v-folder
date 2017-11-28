@@ -1,18 +1,17 @@
 <template>
   <li class="v-leaf" @click="notify('change')" :key="data.level">
-    <i class="fa" :class="className"></i>
-    <span>{{data.name}}</span>
+    <i class="fa" :class="className"></i><span>{{data.name}}</span>
   </li>
 </template>
 
 <script>
-  import EventMixin from './mixin';
+  import EventMixin from './mixin'
 
   const classNames = [
     'fa-square-o',
     'fa-minus-square-o',
     'fa-check-square-o',
-  ];
+  ]
 
   export default {
     name: 'v-leaf',
@@ -29,8 +28,8 @@
     },
     computed: {
       className() {
-        return classNames[this.data.check + 1];
+        return classNames[this.data.check + 1]
       }
     }
-  };
+  }
 </script>
