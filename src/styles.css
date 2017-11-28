@@ -2,13 +2,12 @@
                           .v-branch
 ---------------------------------------------------------------*/
 .v-branch-body {
+  font-family: PingFang SC,Lantinghei SC,Helvetica Neue,Helvetica,Arial,Microsoft YaHei,STHeitiSC-Light,simsun,WenQuanYi Zen Hei,WenQuanYi Micro Hei,"sans-serif";
   padding: 0;
-  font-size: 16px;
-  color: #666;
   list-style: none;
 }
 .v-branch-body > .v-branch {
-  padding-left: 20px;
+  padding-left: 1.2em;
 }
 .v-branch > ul {
   margin: 0;
@@ -19,42 +18,54 @@
 /*----------------------------------------------------------------
                       .v-node && .v-leaf
 ---------------------------------------------------------------*/
+
 .v-node,
 .v-leaf {
-  height: 1.5em;
-  line-height: 1.5em;
-  padding: 0 0 0 20px;
-  vertical-align: middle;
+  display: flex;
+  align-items: center;
+  padding: 0 0 0 1.2em;
+
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+
+  cursor: pointer;
 }
+
 .v-leaf {
-  margin: 0 0 0 20px;
+  margin: 0 0 0 1.2em;
+}
+
+.v-node span,
+.v-leaf span {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .v-node > .fa,
-.v-node > span > .fa,
 .v-leaf > .fa {
-  float: left;
-  width: 20px;
-  height: 1.5em;
-  line-height: 1.5em;
+  width: 1.2em;
+  flex: auto 0 0;
   color: #0d83e6;
-  text-align: center;
+  vertical-align: middle;
   cursor: pointer;
 }
-.v-node > span, 
-.v-leaf > span {
-  float: left;
-  cursor: pointer;
+
+.v-node > .fa:before,
+.v-leaf > .fa:before {
+  vertical-align: middle;
 }
 
 .v-node .fa:hover,
 .v-leaf .fa:hover {
   color: #0c71c5;
 }
+
 .v-node > .cursor-no-ops {
   cursor: not-allowed;
 }
+
 .v-node > .cursor-progress {
   cursor: progress;
 }
